@@ -1,4 +1,6 @@
 import type { ChildrenProps } from '@/types';
+import { DeepgramContextProvider } from './deepgram-provider';
+import { MicrophoneContextProvider } from './microphone-provider';
 import { ThemeProvider } from './theme-provider';
 
 const GlobalProvider = ({ children }: ChildrenProps) => {
@@ -9,7 +11,11 @@ const GlobalProvider = ({ children }: ChildrenProps) => {
       enableSystem
       disableTransitionOnChange
     >
-      {children}
+      <MicrophoneContextProvider>
+        <DeepgramContextProvider>
+          {children}
+        </DeepgramContextProvider>
+      </MicrophoneContextProvider>
     </ThemeProvider>
   )
 }
