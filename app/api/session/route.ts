@@ -1,13 +1,10 @@
 "use server";
 
-import fs from 'fs';
-import path from 'path';
-
+import { getSystemPrompt } from '@/lib/load-prompt';
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
-  const PROMPT_PATH  = path.join(process.cwd(), 'prompts/system-prompt.txt');
-  const SYSTEM_PROMPT = fs.readFileSync(PROMPT_PATH, 'utf-8');
+  const SYSTEM_PROMPT = getSystemPrompt();
   try {
     const r = await fetch("https://api.openai.com/v1/realtime/sessions", {
       method: "POST",
