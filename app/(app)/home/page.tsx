@@ -1,4 +1,3 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { BarChart, BookOpen, Clock, Code, Users } from "lucide-react"
@@ -7,42 +6,6 @@ import Link from "next/link"
 export default function Dashboard() {
   return (
     <div className="flex min-h-screen flex-col px-24">
-      {/* Header */}
-      <header className="border-b">
-        <div className="container flex h-16 items-center justify-between py-4">
-          <div className="flex items-center gap-2">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="bg-gradient-to-r from-purple-600 to-indigo-600 w-8 h-8 rounded-md"></div>
-              <span className="text-xl font-bold">Prepy</span>
-            </Link>
-          </div>
-          <div className="flex items-center gap-4">
-            <Link href="/interviews">
-              <Button variant="ghost" size="sm">
-                Practice
-              </Button>
-            </Link>
-            <Link href="/dashboard/history">
-              <Button variant="ghost" size="sm">
-                History
-              </Button>
-            </Link>
-            <Link href="/dashboard/settings">
-              <Button variant="ghost" size="sm">
-                Settings
-              </Button>
-            </Link>
-            <div className="flex items-center gap-2">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src="/placeholder.svg?height=32&width=32" alt="User" />
-                <AvatarFallback>JD</AvatarFallback>
-              </Avatar>
-              <span className="text-sm font-medium">John Doe</span>
-            </div>
-          </div>
-        </div>
-      </header>
-
       {/* Main Content */}
       <main className="flex-1 py-8">
         <div className="container">
