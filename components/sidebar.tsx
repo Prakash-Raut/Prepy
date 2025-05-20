@@ -1,7 +1,8 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { FileText, Home, Lock, Search, Settings, Video } from "lucide-react";
+import { Home, Search, Settings, Video } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -40,7 +41,7 @@ export function Sidebar() {
       {/* Logo */}
       <div className="mb-8">
         <div className="h-12 w-12 rounded-xl flex items-center justify-center">
-          <span className="font-bold text-2xl">P</span>
+          <Image src="/next.svg" alt="Logo" width={48} height={48} />
         </div>
       </div>
 
@@ -50,10 +51,12 @@ export function Sidebar() {
           <Link
             key={item.name}
             href={item.href}
-            className={`flex flex-col items-center w-full px-2 py-2 text-xs ${isActive(item.href) ? "text-primary" : "hover:text-muted-foreground"
-              }`}
+            className="flex flex-col items-center w-full px-2 py-2 text-xs"
           >
-            <item.icon className="h-5 w-5 mb-1" />
+            <div className={`rounded-2xl flex items-center justify-center group w-fit cursor-pointer p-2 text-gray-900 transition-all duration-300 ${isActive(item.href) ? "group-hover:bg-indigo-50 bg-indigo-50 hover:bg-indigo-50 hover:text-indigo-600" : ""}`}>
+              <item.icon className={`h-6 w-6 mb-1 ${isActive(item.href) ? "h-6 w-6 shrink-0 mx-auto transition-all duration-300 text-indigo-600" : "group-hover:scale-110"}`} />
+            </div>
+
             <span>{item.name}</span>
           </Link>
         ))}
