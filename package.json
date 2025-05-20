@@ -7,8 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "pnpm biome lint --write .",
-		"format": "pnpm biome format --write .",
-		"check": "pnpm biome check --write ."
+    "format": "pnpm biome format --write .",
+    "check": "pnpm biome check --write .",
+    "prepare": "husky"
   },
   "dependencies": {
     "next": "15.3.2",
@@ -21,7 +22,14 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.0.0",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "pnpm run check"
+    ]
   }
 }
