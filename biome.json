@@ -6,7 +6,7 @@
 		"useIgnoreFile": false
 	},
 	"files": {
-		"include": ["src/**/*.ts", "src/**/*.tsx"],
+		"include": ["**/*.ts", "**/*.tsx"],
 		"ignoreUnknown": false,
 		"ignore": ["node_modules", ".next"]
 	},
@@ -25,7 +25,9 @@
 	},
 	"javascript": {
 		"formatter": {
-			"quoteStyle": "double"
+			"quoteStyle": "double",
+			"semicolons": "always",
+			"trailingCommas": "none"
 		}
 	}
 }
