@@ -1,68 +1,25 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { ChevronDown, Clock, Mic2 } from "lucide-react";
+import {
+	CameraIcon,
+	ChevronDown,
+	Clock,
+	Mic2Icon,
+	Volume2Icon,
+} from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Interview = {
 	title: string;
 	subtitle: string;
-	duration: number;
+	duration: string;
 	difficulty: string;
 	description: string;
 };
 
-// Mock interview data
-const interviewData = {
-	"software-engineering": {
-		title: "Software Engineering",
-		subtitle: "New Grad E3: Technical interview #1",
-		duration: 20,
-		difficulty: "Medium",
-		description:
-			"This Meta Software Engineer Mock Interview, ideal for new grads and entry-level engineers targeting roles like E3, is a focused 25-minute session designed to simulate real-world technical interviews. The interview begins with a brief introduction where candidates discuss their background and highlight a project or work experience, followed by targeted questions to explore their technical skills in.",
-		sessions: 5765,
-		company: "Mercor",
-		website: "mercor.com",
-	},
-	"stacks-vs-queues": {
-		title: "Stacks vs Queues",
-		subtitle: "Learn the FIFO and LIFO flows",
-		duration: 5,
-		difficulty: "Medium",
-		description:
-			"This interview focuses on understanding the fundamental differences between stacks and queues, their implementations, and common use cases. You'll be asked to explain LIFO and FIFO principles and implement basic operations for both data structures.",
-		sessions: 3421,
-		company: "Mercor",
-		website: "mercor.com",
-	},
-	"hash-tables": {
-		title: "Hash Tables",
-		subtitle: "Master the magic of key-to-index storage",
-		duration: 5,
-		difficulty: "Medium",
-		description:
-			"This interview covers hash table implementations, collision resolution strategies, and performance characteristics. You'll be asked to explain how hash functions work and implement basic hash table operations.",
-		sessions: 2876,
-		company: "Mercor",
-		website: "mercor.com",
-	},
-	"mvc-models": {
-		title: "MVC Models",
-		subtitle: "Explain this core design architecture",
-		duration: 5,
-		difficulty: "Medium",
-		description:
-			"This interview focuses on the Model-View-Controller architectural pattern. You'll be asked to explain the responsibilities of each component, how they interact, and when to use this pattern in software development.",
-		sessions: 1932,
-		company: "Mercor",
-		website: "mercor.com",
-	},
-};
-
-// Similar interviews for recommendations
 const similarInterviews = [
 	{
 		id: "software-engineering",
@@ -91,31 +48,58 @@ const similarInterviews = [
 ];
 
 export default function PracticeInterviewPage() {
-	const params = useParams();
+	const { id } = useParams();
 	const router = useRouter();
-	const id = params.id as string;
-
-	const [interview, setInterview] = useState<Interview | null>(null);
+	const videoRef = useRef<HTMLVideoElement>(null);
+	const [stream, setStream] = useState<MediaStream | null>(null);
+	const [isLoading, setIsLoading] = useState(true);
+	const [hasPermissions, setHasPermissions] = useState(false);
 	const [isExpanded, setIsExpanded] = useState(false);
-	// const [isVideoOn, setIsVideoOn] = useState(true)
+
+	// Mock interview data - in real app, fetch based on params.id
+	const interview: Interview = {
+		title: "Software Engineering",
+		subtitle: "New Grad E3: Technical interview #1",
+		duration: "20m",
+		difficulty: "Medium",
+		description:
+			"This Meta Software Engineer Mock Interview, ideal for new grads and entry-level engineers targeting roles like E3, is a focused 25-minute session designed to simulate real-world technical interviews. The interview begins with a brief introduction where candidates discuss their background and highlight a project or work experience, followed by targeted questions to explore their technical skills in. Read more",
+	};
 
 	useEffect(() => {
-		// Load interview data
-		if (id && interviewData[id as keyof typeof interviewData]) {
-			setInterview(interviewData[id as keyof typeof interviewData]);
-		} else {
-			// Handle invalid interview ID
-			router.push("/interview-list");
-		}
-	}, [id, router]);
+		const initializeCamera = async () => {
+			try {
+				const mediaStream = await navigator.mediaDevices.getUserMedia({
+					video: true,
+					audio: false,
+				});
+				setStream(mediaStream);
+				if (videoRef.current) {
+					videoRef.current.srcObject = mediaStream;
+				}
+				setHasPermissions(true);
+			} catch (error) {
+				console.error("Error accessing camera/microphone:", error);
+				setHasPermissions(false);
+			} finally {
+				setIsLoading(false);
+			}
+		};
 
-	if (!interview) {
-		return (
-			<div className="flex justify-center items-center min-h-screen">
-				Loading...
-			</div>
-		);
-	}
+		initializeCamera();
+
+		return () => {
+			if (stream) {
+				for (const track of stream.getTracks()) {
+					track.stop();
+				}
+			}
+		};
+	}, [stream]);
+
+	const handleStartInterview = () => {
+		router.push(`/practice-interview/${id}/interview`);
+	};
 
 	return (
 		<div className="min-h-screen px-24">
@@ -145,7 +129,7 @@ export default function PracticeInterviewPage() {
 						<span className="inline-block h-5 w-5 text-muted-foreground">
 							<Clock className="h-5 w-5" />
 						</span>
-						<span>{interview.duration}m</span>
+						<span>{interview.duration}</span>
 					</div>
 					<Button className="text-sm">{interview.difficulty}</Button>
 				</div>
@@ -157,15 +141,29 @@ export default function PracticeInterviewPage() {
 			<div className="container py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
 				{/* Video Section - 2/3 width */}
 				<div className="lg:col-span-2">
-					<div className="mt-3 relative">
+					<div className="relative">
 						<div className="relative flex items-center justify-center bg-stone-900 rounded-xl p-1.5 sm:p-0">
-							<video
-								autoPlay
-								playsInline
-								muted
-								className="bg-black max-sm:max-h-[200px] lg:aspect-video rounded-lg"
-								style={{ objectFit: "cover", transform: "scaleX(-1)" }}
-							/>
+							{isLoading ? (
+								<div className="w-full h-full flex items-center justify-center">
+									<div className="text-white">Loading camera...</div>
+								</div>
+							) : hasPermissions ? (
+								<video
+									ref={videoRef}
+									autoPlay
+									muted
+									playsInline
+									className="w-full h-full object-cover lg:aspect-video rounded-lg"
+									style={{ objectFit: "cover", transform: "scaleX(-1)" }}
+								/>
+							) : (
+								<div className="w-full h-full flex items-center justify-center">
+									<div className="text-white text-center">
+										<CameraIcon className="w-12 h-12 mx-auto mb-2 opacity-50" />
+										<p>Camera access required</p>
+									</div>
+								</div>
+							)}
 
 							{/* Audio Level Detector */}
 							<div className="absolute bottom-4 left-4 z-10 h-7 w-7 rounded-full">
@@ -187,22 +185,23 @@ export default function PracticeInterviewPage() {
 						</div>
 
 						<div className="sm:flex mt-3 w-full gap-0 grid grid-cols-2">
-							{["Microphone", "Speakers", "Integrated Camera"].map((device) => (
-								<div
-									key={device}
-									className="flex w-full cursor-pointer items-center gap-1 rounded-full px-2"
-								>
-									<div className="relative inline-block w-full flex-1 text-left">
-										<Button type="button" variant="outline">
-											<Mic2 />
-											<div className="flex-1 truncate text-ellipsis text-left font-medium">
-												{device}
-											</div>
-											<ChevronDown size={16} />
-										</Button>
-									</div>
-								</div>
-							))}
+							<div className="flex gap-4">
+								<Button variant="outline" className="flex items-center gap-2">
+									<Mic2Icon className="w-4 h-4" />
+									Microphone
+									<ChevronDown className="w-4 h-4" />
+								</Button>
+								<Button variant="outline" className="flex items-center gap-2">
+									<Volume2Icon className="w-4 h-4" />
+									Speakers
+									<ChevronDown className="w-4 h-4" />
+								</Button>
+								<Button variant="outline" className="flex items-center gap-2">
+									<CameraIcon className="w-4 h-4" />
+									Integrated Camera
+									<ChevronDown className="w-4 h-4" />
+								</Button>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -217,7 +216,13 @@ export default function PracticeInterviewPage() {
 							</div>
 							<p className="text-sm">Prepy AI is speaking</p>
 						</div>
-						<Button className="w-full">Start Interview</Button>
+						<Button
+							className="w-full"
+							onClick={handleStartInterview}
+							disabled={!hasPermissions}
+						>
+							Start Interview
+						</Button>
 						<Button variant="outline" className="w-full mt-2">
 							I'm having issues
 						</Button>
