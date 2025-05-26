@@ -5,7 +5,7 @@ import {
 	type LiveSchema,
 	type LiveTranscriptionEvent,
 	LiveTranscriptionEvents,
-	createClient
+	createClient,
 } from "@deepgram/sdk";
 
 import {
@@ -13,7 +13,7 @@ import {
 	type ReactNode,
 	createContext,
 	useContext,
-	useState
+	useState,
 } from "react";
 
 interface DeepgramContextType {
@@ -23,7 +23,7 @@ interface DeepgramContextType {
 }
 
 const DeepgramContext = createContext<DeepgramContextType | undefined>(
-	undefined
+	undefined,
 );
 
 interface DeepgramContextProviderProps {
@@ -68,7 +68,7 @@ const DeepgramContextProvider: FunctionComponent<
 			value={{
 				connection,
 				connectToDeepgram,
-				disconnectFromDeepgram
+				disconnectFromDeepgram,
 			}}
 		>
 			{children}
@@ -80,7 +80,7 @@ function useDeepgram(): DeepgramContextType {
 	const context = useContext(DeepgramContext);
 	if (context === undefined) {
 		throw new Error(
-			"useDeepgram must be used within a DeepgramContextProvider"
+			"useDeepgram must be used within a DeepgramContextProvider",
 		);
 	}
 	return context;
@@ -90,5 +90,5 @@ export {
 	DeepgramContextProvider,
 	LiveTranscriptionEvents,
 	useDeepgram,
-	type LiveTranscriptionEvent
+	type LiveTranscriptionEvent,
 };

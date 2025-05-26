@@ -5,7 +5,7 @@ import {
 	CardDescription,
 	CardFooter,
 	CardHeader,
-	CardTitle
+	CardTitle,
 } from "@/components/ui/card";
 import { BarChart, BookOpen, Clock, Code, Users } from "lucide-react";
 import Link from "next/link";

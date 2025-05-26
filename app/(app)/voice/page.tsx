@@ -45,13 +45,13 @@ const VoicePage = () => {
 				body: offer.sdp,
 				headers: {
 					Authorization: `Bearer ${EPHEMERAL_KEY}`,
-					"Content-Type": "application/sdp"
-				}
+					"Content-Type": "application/sdp",
+				},
 			});
 
 			const answer = {
 				type: "answer",
-				sdp: await sdpResponse.text()
+				sdp: await sdpResponse.text(),
 			} as RTCSessionDescriptionInit;
 			await pc.setRemoteDescription(answer);
 		}

@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import type { ComponentPropsWithoutRef } from "react";
+import { useId } from "react";
 
 interface MarqueeProps extends ComponentPropsWithoutRef<"div"> {
 	/**
@@ -41,6 +42,8 @@ export function Marquee({
 	repeat = 4,
 	...props
 }: MarqueeProps) {
+	const baseId = useId();
+
 	return (
 		<div
 			{...props}
@@ -48,21 +51,21 @@ export function Marquee({
 				"group flex overflow-hidden p-2 [--duration:40s] [--gap:1rem] [gap:var(--gap)]",
 				{
 					"flex-row": !vertical,
-					"flex-col": vertical
+					"flex-col": vertical,
 				},
-				className
+				className,
 			)}
 		>
 			{Array(repeat)
 				.fill(0)
-				.map((i) => (
+				.map(() => (
 					<div
-						key={i}
+						key={`${baseId}-marquee`}
 						className={cn("flex shrink-0 justify-around [gap:var(--gap)]", {
 							"animate-marquee flex-row": !vertical,
 							"animate-marquee-vertical flex-col": vertical,
 							"group-hover:[animation-play-state:paused]": pauseOnHover,
-							"[animation-direction:reverse]": reverse
+							"[animation-direction:reverse]": reverse,
 						})}
 					>
 						{children}

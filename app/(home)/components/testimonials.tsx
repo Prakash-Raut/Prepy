@@ -2,7 +2,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import type { ComponentProps } from "react";
-import { Marquee } from "../ui/marquee";
+import { Marquee } from "../../../components/ui/marquee";
 
 const testimonials = [
 	{
@@ -12,7 +12,7 @@ const testimonials = [
 		company: "Tata Consultancy Services",
 		testimonial:
 			"Prepy felt like having a personal coach 24/7. The mock interviews were spot on and helped me stay calm and confident during my actual interviews.",
-		avatar: "https://randomuser.me/api/portraits/men/32.jpg"
+		avatar: "https://randomuser.me/api/portraits/men/32.jpg",
 	},
 	{
 		id: 2,
@@ -21,7 +21,7 @@ const testimonials = [
 		company: "Zeta",
 		testimonial:
 			"I cracked my dream role thanks to Prepy. The AI feedback on my answers was super detailed and actionable.",
-		avatar: "https://randomuser.me/api/portraits/women/45.jpg"
+		avatar: "https://randomuser.me/api/portraits/women/45.jpg",
 	},
 	{
 		id: 3,
@@ -30,7 +30,7 @@ const testimonials = [
 		company: "Paytm",
 		testimonial:
 			"Practicing DSA and system design with Prepy gave me a huge edge. It felt like a friend grilling me before the real deal.",
-		avatar: "https://randomuser.me/api/portraits/men/76.jpg"
+		avatar: "https://randomuser.me/api/portraits/men/76.jpg",
 	},
 	{
 		id: 4,
@@ -39,7 +39,7 @@ const testimonials = [
 		company: "Flipkart",
 		testimonial:
 			"Prepy’s behavioral interview simulations were a game-changer. It helped me frame my stories clearly and confidently.",
-		avatar: "https://randomuser.me/api/portraits/women/65.jpg"
+		avatar: "https://randomuser.me/api/portraits/women/65.jpg",
 	},
 	{
 		id: 5,
@@ -48,7 +48,7 @@ const testimonials = [
 		company: "Amazon",
 		testimonial:
 			"The structured prep and instant feedback made Prepy my go-to resource. It’s way more effective than watching random YouTube videos.",
-		avatar: "https://randomuser.me/api/portraits/men/84.jpg"
+		avatar: "https://randomuser.me/api/portraits/men/84.jpg",
 	},
 	{
 		id: 6,
@@ -57,8 +57,8 @@ const testimonials = [
 		company: "CureAI",
 		testimonial:
 			"Prepy didn’t just prepare me for interviews, it made me reflect on my experiences deeply. That made a huge difference during HR rounds.",
-		avatar: "https://randomuser.me/api/portraits/women/71.jpg"
-	}
+		avatar: "https://randomuser.me/api/portraits/women/71.jpg",
+	},
 ];
 
 const Testimonial = () => (

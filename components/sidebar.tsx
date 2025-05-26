@@ -17,23 +17,23 @@ export function Sidebar() {
 		{
 			name: "Home",
 			href: "/home",
-			icon: Home
+			icon: Home,
 		},
 		{
 			name: "Explore",
-			href: "/explore",
-			icon: Search
+			href: "#",
+			icon: Search,
 		},
 		{
 			name: "Interviews",
 			href: "/interview-list",
-			icon: Video
+			icon: Video,
 		},
 		{
 			name: "Settings",
-			href: "/settings",
-			icon: Settings
-		}
+			href: "#",
+			icon: Settings,
+		},
 	];
 
 	return (

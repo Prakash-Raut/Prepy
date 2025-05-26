@@ -25,7 +25,7 @@ const interviewData = {
 			"This Meta Software Engineer Mock Interview, ideal for new grads and entry-level engineers targeting roles like E3, is a focused 25-minute session designed to simulate real-world technical interviews. The interview begins with a brief introduction where candidates discuss their background and highlight a project or work experience, followed by targeted questions to explore their technical skills in.",
 		sessions: 5765,
 		company: "Mercor",
-		website: "mercor.com"
+		website: "mercor.com",
 	},
 	"stacks-vs-queues": {
 		title: "Stacks vs Queues",
@@ -36,7 +36,7 @@ const interviewData = {
 			"This interview focuses on understanding the fundamental differences between stacks and queues, their implementations, and common use cases. You'll be asked to explain LIFO and FIFO principles and implement basic operations for both data structures.",
 		sessions: 3421,
 		company: "Mercor",
-		website: "mercor.com"
+		website: "mercor.com",
 	},
 	"hash-tables": {
 		title: "Hash Tables",
@@ -47,7 +47,7 @@ const interviewData = {
 			"This interview covers hash table implementations, collision resolution strategies, and performance characteristics. You'll be asked to explain how hash functions work and implement basic hash table operations.",
 		sessions: 2876,
 		company: "Mercor",
-		website: "mercor.com"
+		website: "mercor.com",
 	},
 	"mvc-models": {
 		title: "MVC Models",
@@ -58,8 +58,8 @@ const interviewData = {
 			"This interview focuses on the Model-View-Controller architectural pattern. You'll be asked to explain the responsibilities of each component, how they interact, and when to use this pattern in software development.",
 		sessions: 1932,
 		company: "Mercor",
-		website: "mercor.com"
-	}
+		website: "mercor.com",
+	},
 };
 
 // Similar interviews for recommendations
@@ -70,7 +70,7 @@ const similarInterviews = [
 		description: "New Grad E3: Technical interview #1",
 		duration: 20,
 		difficulty: "Medium",
-		backgroundColor: "bg-purple-100"
+		backgroundColor: "bg-purple-100",
 	},
 	{
 		id: "stacks-vs-queues",
@@ -78,7 +78,7 @@ const similarInterviews = [
 		description: "Learn the FIFO and LIFO flows",
 		duration: 5,
 		difficulty: "Medium",
-		backgroundColor: "bg-green-100"
+		backgroundColor: "bg-green-100",
 	},
 	{
 		id: "hash-tables",
@@ -86,8 +86,8 @@ const similarInterviews = [
 		description: "Master the magic of key-to-index storage",
 		duration: 5,
 		difficulty: "Medium",
-		backgroundColor: "bg-purple-100"
-	}
+		backgroundColor: "bg-purple-100",
+	},
 ];
 
 export default function PracticeInterviewPage() {

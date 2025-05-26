@@ -5,7 +5,7 @@ import {
 	createContext,
 	useCallback,
 	useContext,
-	useState
+	useState,
 } from "react";
 
 interface MicrophoneContextType {
@@ -22,7 +22,7 @@ export enum MicrophoneEvents {
 	Pause = "pause",
 	Resume = "resume",
 	Start = "start",
-	Stop = "stop"
+	Stop = "stop",
 }
 
 export enum MicrophoneState {
@@ -33,11 +33,11 @@ export enum MicrophoneState {
 	Open = 3,
 	Error = 4,
 	Pausing = 5,
-	Paused = 6
+	Paused = 6,
 }
 
 const MicrophoneContext = createContext<MicrophoneContextType | undefined>(
-	undefined
+	undefined,
 );
 
 interface MicrophoneContextProviderProps {
@@ -45,10 +45,10 @@ interface MicrophoneContextProviderProps {
 }
 
 const MicrophoneContextProvider: React.FC<MicrophoneContextProviderProps> = ({
-	children
+	children,
 }) => {
 	const [microphoneState, setMicrophoneState] = useState<MicrophoneState>(
-		MicrophoneState.NotSetup
+		MicrophoneState.NotSetup,
 	);
 	const [microphone, setMicrophone] = useState<MediaRecorder | null>(null);
 
@@ -59,8 +59,8 @@ const MicrophoneContextProvider: React.FC<MicrophoneContextProviderProps> = ({
 			const userMedia = await navigator.mediaDevices.getUserMedia({
 				audio: {
 					noiseSuppression: true,
-					echoCancellation: true
-				}
+					echoCancellation: true,
+				},
 			});
 
 			const microphone = new MediaRecorder(userMedia);
@@ -101,7 +101,7 @@ const MicrophoneContextProvider: React.FC<MicrophoneContextProviderProps> = ({
 				startMicrophone,
 				stopMicrophone,
 				setupMicrophone,
-				microphoneState
+				microphoneState,
 			}}
 		>
 			{children}
@@ -114,7 +114,7 @@ function useMicrophone(): MicrophoneContextType {
 
 	if (context === undefined) {
 		throw new Error(
-			"useMicrophone must be used within a MicrophoneContextProvider"
+			"useMicrophone must be used within a MicrophoneContextProvider",
 		);
 	}
 

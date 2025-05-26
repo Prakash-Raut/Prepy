@@ -3,19 +3,19 @@
 import {
 	type LiveTranscriptionEvent,
 	LiveTranscriptionEvents,
-	useDeepgram
+	useDeepgram,
 } from "@/lib/providers/deepgram-provider";
 import {
 	MicrophoneEvents,
 	MicrophoneState,
-	useMicrophone
+	useMicrophone,
 } from "@/lib/providers/microphone-provider";
 import { type JSX, useEffect, useRef, useState } from "react";
 import Visualizer from "./visualizer";
 
 const App: () => JSX.Element = () => {
 	const [caption, setCaption] = useState<string | undefined>(
-		"Powered by Deepgram"
+		"Powered by Deepgram",
 	);
 	const { connection, connectToDeepgram } = useDeepgram();
 	const { setupMicrophone, microphone, startMicrophone, microphoneState } =
@@ -34,7 +34,7 @@ const App: () => JSX.Element = () => {
 				interim_results: true,
 				smart_format: true,
 				filler_words: true,
-				utterance_end_ms: 3000
+				utterance_end_ms: 3000,
 			});
 		}
 	}, [microphoneState, connectToDeepgram]);
@@ -78,7 +78,7 @@ const App: () => JSX.Element = () => {
 		return () => {
 			connection.removeListener(
 				LiveTranscriptionEvents.Transcript,
-				onTranscript
+				onTranscript,
 			);
 			microphone.removeEventListener(MicrophoneEvents.DataAvailable, onData);
 			if (captionTimeout.current) clearTimeout(captionTimeout.current);

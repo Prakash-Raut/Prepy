@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
 			method: "POST",
 			headers: {
 				Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-				"Content-Type": "application/json"
+				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({
 				model: "gpt-4o-realtime-preview-2024-12-17",
@@ -19,18 +19,18 @@ export async function GET(request: NextRequest) {
 				input_audio_format: "pcm16",
 				output_audio_format: "pcm16",
 				input_audio_transcription: {
-					model: "whisper-1"
+					model: "whisper-1",
 				},
-				max_response_output_tokens: 4096
-			})
+				max_response_output_tokens: 4096,
+			}),
 		});
 
 		if (!r.ok) {
 			return NextResponse.json(
 				{
-					error: "Failed to create session"
+					error: "Failed to create session",
 				},
-				{ status: r.status }
+				{ status: r.status },
 			);
 		}
 
@@ -40,9 +40,9 @@ export async function GET(request: NextRequest) {
 	} catch (error) {
 		return NextResponse.json(
 			{
-				error: "Internal server error"
+				error: "Internal server error",
 			},
-			{ status: 500 }
+			{ status: 500 },
 		);
 	}
 }

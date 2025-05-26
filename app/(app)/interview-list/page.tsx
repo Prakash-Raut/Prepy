@@ -13,7 +13,7 @@ const categories = [
 	{ id: "consulting", name: "Consulting", icon: "👥" },
 	{ id: "writing", name: "Writing", icon: "📝" },
 	{ id: "legal", name: "Legal", icon: "⚖️" },
-	{ id: "marketing", name: "Marketing", icon: "📣" }
+	{ id: "marketing", name: "Marketing", icon: "📣" },
 ];
 
 const interviews = [
@@ -24,7 +24,7 @@ const interviews = [
 		duration: 20,
 		difficulty: "Medium",
 		category: "software",
-		backgroundColor: "bg-purple-100"
+		backgroundColor: "bg-purple-100",
 	},
 	{
 		id: "stacks-vs-queues",
@@ -33,7 +33,7 @@ const interviews = [
 		duration: 5,
 		difficulty: "Medium",
 		category: "software",
-		backgroundColor: "bg-green-100"
+		backgroundColor: "bg-green-100",
 	},
 	{
 		id: "hash-tables",
@@ -42,7 +42,7 @@ const interviews = [
 		duration: 5,
 		difficulty: "Medium",
 		category: "software",
-		backgroundColor: "bg-purple-100"
+		backgroundColor: "bg-purple-100",
 	},
 	{
 		id: "mvc-models",
@@ -51,7 +51,7 @@ const interviews = [
 		duration: 5,
 		difficulty: "Medium",
 		category: "software",
-		backgroundColor: "bg-blue-100"
+		backgroundColor: "bg-blue-100",
 	},
 	{
 		id: "binary-search",
@@ -60,7 +60,7 @@ const interviews = [
 		duration: 5,
 		difficulty: "Easy",
 		category: "software",
-		backgroundColor: "bg-purple-100"
+		backgroundColor: "bg-purple-100",
 	},
 	{
 		id: "dynamic-programming",
@@ -69,7 +69,7 @@ const interviews = [
 		duration: 15,
 		difficulty: "Hard",
 		category: "software",
-		backgroundColor: "bg-blue-100"
+		backgroundColor: "bg-blue-100",
 	},
 	{
 		id: "system-design",
@@ -78,7 +78,7 @@ const interviews = [
 		duration: 30,
 		difficulty: "Hard",
 		category: "software",
-		backgroundColor: "bg-green-100"
+		backgroundColor: "bg-green-100",
 	},
 	{
 		id: "react-hooks",
@@ -87,8 +87,8 @@ const interviews = [
 		duration: 10,
 		difficulty: "Medium",
 		category: "software",
-		backgroundColor: "bg-purple-100"
-	}
+		backgroundColor: "bg-purple-100",
+	},
 ];
 
 export default function InterviewListPage() {
@@ -115,7 +115,7 @@ export default function InterviewListPage() {
 	}, []);
 
 	const filteredInterviews = interviews.filter(
-		(interview) => interview.category === selectedCategory
+		(interview) => interview.category === selectedCategory,
 	);
 
 	return (
