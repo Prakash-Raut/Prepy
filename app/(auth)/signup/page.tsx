@@ -1,3 +1,5 @@
+import PostHogClient from "@/app/posthog";
+
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -5,6 +7,13 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 
 export default function SignUpPage() {
+	const posthog = PostHogClient();
+
+	posthog.capture({
+		distinctId: crypto.randomUUID(),
+		event: "signup_page_viewed",
+	});
+
 	return (
 		<div className="flex min-h-screen flex-col">
 			<div className="flex flex-1 flex-col justify-center px-6 py-12 lg:px-8">

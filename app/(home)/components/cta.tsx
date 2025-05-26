@@ -4,7 +4,7 @@ const CTA = () => {
 	return (
 		<div className="container px-4 md:px-6 bg-sky-600 py-8 rounded-2xl">
 			<div className="flex flex-col items-center text-center space-y-4 md:space-y-6 max-w-3xl mx-auto">
-				<h2 className="text-white text-4xl md:text-7xl font-medium tracking-tighter max-w-xs md:max-w-xl text-center">
+				<h2 className="text-white text-4xl md:text-7xl font-medium tracking-tight max-w-xs md:max-w-xl text-center">
 					Ready to ace your next interview?
 				</h2>
 				<p className="text-xl text-white">

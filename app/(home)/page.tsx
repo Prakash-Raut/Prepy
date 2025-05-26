@@ -1,3 +1,5 @@
+import PostHogClient from "../posthog";
+
 import CTA from "./components/cta";
 import FAQ from "./components/faq";
 import Feature from "./components/feature";
@@ -10,6 +12,13 @@ import Pricing from "./components/pricing";
 import Testimonial from "./components/testimonials";
 
 export default function LandingPage() {
+	const posthog = PostHogClient();
+
+	posthog.capture({
+		distinctId: crypto.randomUUID(),
+		event: "landing_page_viewed",
+	});
+
 	return (
 		<div className="flex flex-col min-h-screen">
 			<Navbar />
