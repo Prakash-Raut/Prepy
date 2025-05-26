@@ -1,14 +1,24 @@
+import Image from "next/image";
 import Link from "next/link";
 
 const Footer = () => {
 	return (
 		<footer className="border-t py-12 px-24 mt-auto">
-			<div className="container px-4 md:px-6">
+			<div className="container mx-auto px-4 md:px-6">
 				<div className="grid grid-cols-2 md:grid-cols-4 gap-8">
 					<div>
 						<div className="flex items-center gap-2 mb-4">
-							<div className=" w-8 h-8 rounded-md" />
-							<span className="text-xl font-bold">Prepy</span>
+							<div className="flex items-center gap-2">
+								<div className="h-8 w-8 rounded-xl flex items-center justify-center">
+									<Image
+										src="/prepy-logo-2.png"
+										alt="Logo"
+										width={48}
+										height={48}
+									/>
+								</div>
+								<span className="text-xl font-bold">Prepy</span>
+							</div>
 						</div>
 						<p className="text-sm text-muted-foreground">
 							AI-powered interview preparation for ambitious professionals.

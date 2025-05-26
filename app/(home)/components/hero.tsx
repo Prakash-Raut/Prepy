@@ -4,7 +4,7 @@ import { PlayIcon } from "lucide-react";
 
 const Hero = () => {
 	return (
-		<main className="container mx-auto px-4 pt-16 pb-24">
+		<main className="container mx-auto px-4 pt-8">
 			<div className="max-w-4xl mx-auto text-center">
 				{/* Badge */}
 				<Badge
@@ -17,9 +17,9 @@ const Hero = () => {
 
 				{/* Main Headline */}
 				<h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-					Ace your next interview
+					Ace your next <span className="text-sky-500">Interview</span>
 					<br />
-					<span className="text-gray-700">with AI mock practice</span>
+					<span className="text-gray-700">with AI Preparation</span>
 				</h1>
 
 				{/* Subtitle */}

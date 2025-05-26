@@ -3,32 +3,44 @@ import Image from "next/image";
 import { NavMenu } from "./nav-menu";
 import { NavigationSheet } from "./navigation-sheet";
 
-const Navbar01Page = () => {
+const Navbar04Page = () => {
 	return (
-		<nav className="h-16 bg-background border-b">
-			<div className="h-full flex items-center justify-between max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
-				{/* <Logo /> */}
-				<div className="flex items-center gap-2">
-					<div className="h-8 w-8 rounded-xl flex items-center justify-center">
-						<Image src="/prepy-logo-2.png" alt="Logo" width={48} height={48} />
+		<div className="bg-muted">
+			<nav className="fixed top-6 inset-x-4 h-16 bg-background border dark:border-slate-700/70 max-w-screen-xl mx-auto rounded-full">
+				<div className="h-full flex items-center justify-between mx-auto px-4">
+					<div className="flex items-center gap-2">
+						<div className="h-8 w-8 rounded-xl flex items-center justify-center">
+							<Image
+								src="/prepy-logo-2.png"
+								alt="Logo"
+								width={48}
+								height={48}
+							/>
+						</div>
+						<span className="text-xl font-bold">Prepy</span>
 					</div>
-					<span className="text-xl font-bold">Prepy</span>
-				</div>
 
-				{/* Desktop Menu */}
-				<NavMenu className="hidden md:block" />
+					{/* Desktop Menu */}
+					<NavMenu className="hidden md:block" />
 
-				<div className="flex items-center gap-3">
-					<Button>Try for Free</Button>
+					<div className="flex items-center gap-3">
+						<Button
+							variant="outline"
+							className="hidden sm:inline-flex rounded-full"
+						>
+							Sign In
+						</Button>
+						<Button className="rounded-full">Try for Free</Button>
 
-					{/* Mobile Menu */}
-					<div className="md:hidden">
-						<NavigationSheet />
+						{/* Mobile Menu */}
+						<div className="md:hidden">
+							<NavigationSheet />
+						</div>
 					</div>
 				</div>
-			</div>
-		</nav>
+			</nav>
+		</div>
 	);
 };
 
-export default Navbar01Page;
+export default Navbar04Page;

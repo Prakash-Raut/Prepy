@@ -52,12 +52,12 @@ const faq = [
 
 const FAQ = () => {
 	return (
-		<div className="min-h-screen flex items-center justify-center px-6">
+		<div className="container mx-auto px-4 md:px-6 flex items-center justify-center">
 			<div className="w-full max-w-2xl">
-				<h2 className="text-4xl md:text-5xl !leading-[1.15] font-bold tracking-tight">
+				<h2 className="text-3xl md:text-4xl !leading-[1.15] font-bold tracking-tight text-center">
 					Frequently Asked Questions
 				</h2>
-				<p className="mt-1.5 text-lg text-muted-foreground">
+				<p className="mt-1.5 text-lg text-muted-foreground text-center">
 					Quick answers to common questions about our products and services.
 				</p>
 

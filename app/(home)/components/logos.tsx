@@ -4,7 +4,10 @@ const FloatingCompanyLogos = () => {
 	return (
 		<div className="flex items-center justify-center p-6">
 			<div className="overflow-hidden">
-				<div className="mt-6 flex items-center justify-center gap-x-14 gap-y-10 max-w-screen-xl  ">
+				<p className="text-center text-xl font-medium">
+					Trusted by job seekers at
+				</p>
+				<div className="mt-6 flex items-center justify-center gap-x-14 gap-y-10 max-w-screen-xl ">
 					<Marquee pauseOnHover className="[--duration:20s] [&_svg]:mr-10">
 						<Logo01 />
 						<Logo02 />

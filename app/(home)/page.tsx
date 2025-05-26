@@ -23,17 +23,12 @@ export default function LandingPage() {
 		<div className="flex flex-col min-h-screen">
 			<Navbar />
 
-			<section className="py-10 px-24 md:py-28 ">
+			<section className="px-24 md:py-28">
 				<Hero />
 			</section>
 
-			<section className="py-10 px-24">
-				<div className="mt-16 text-center">
-					<p className="text-gray-500 text-sm mb-6">
-						Trusted by job seekers at
-					</p>
-					<FloatingCompanyLogos />
-				</div>
+			<section className="px-24 py-10">
+				<FloatingCompanyLogos />
 			</section>
 
 			<section id="features" className="py-20 px-24">

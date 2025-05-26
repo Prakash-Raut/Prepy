@@ -62,21 +62,19 @@ const testimonials = [
 ];
 
 const Testimonial = () => (
-	<div className="min-h-screen flex justify-center items-center">
-		<div className="h-full w-full">
-			<h2 className="mb-10 text-5xl md:text-6xl font-bold text-center tracking-tight px-6">
-				Testimonials
-			</h2>
-			<div className="relative">
-				<div className="z-10 absolute left-0 inset-y-0 w-[15%] bg-gradient-to-r from-background to-transparent" />
-				<div className="z-10 absolute right-0 inset-y-0 w-[15%] bg-gradient-to-l from-background to-transparent" />
-				<Marquee pauseOnHover className="[--duration:20s]">
-					<TestimonialList />
-				</Marquee>
-				<Marquee pauseOnHover reverse className="mt-0 [--duration:20s]">
-					<TestimonialList />
-				</Marquee>
-			</div>
+	<div className="container mx-auto px-4 h-full w-full md:px-6">
+		<h2 className="mb-10 text-3xl md:text-4xl font-bold text-center tracking-tight">
+			Testimonials
+		</h2>
+		<div className="relative">
+			<div className="z-10 absolute left-0 inset-y-0 w-[15%] bg-gradient-to-r from-background to-transparent" />
+			<div className="z-10 absolute right-0 inset-y-0 w-[15%] bg-gradient-to-l from-background to-transparent" />
+			<Marquee pauseOnHover className="[--duration:20s]">
+				<TestimonialList />
+			</Marquee>
+			<Marquee pauseOnHover reverse className="mt-0 [--duration:20s]">
+				<TestimonialList />
+			</Marquee>
 		</div>
 	</div>
 );
