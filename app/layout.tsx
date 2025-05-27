@@ -1,21 +1,29 @@
 import GlobalProvider from "@/lib/providers/global-provider";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-	variable: "--font-geist-sans",
-	subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-	variable: "--font-geist-mono",
+const inter = Inter({
+	variable: "--font-inter",
 	subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-	title: "Prepy AI",
-	description: "Prepy AI is a platform for technical interviews",
+	title: "Prepy - AI-Powered Mock Interviews to Ace Your Next Job",
+	description:
+		"Prepare for job interviews with Prepy's AI-powered mock interview platform. Get personalized feedback, track your progress, and land your dream job.",
+	keywords: [
+		"mock interview",
+		"AI interview",
+		"interview preparation",
+		"interview practice",
+		"job interview",
+		"career coaching",
+		"interview questions",
+	],
+	authors: [{ name: "Prepy Team" }],
+	robots: "index, follow",
+	category: "technology",
 };
 
 export default function RootLayout({
@@ -25,9 +33,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en" suppressHydrationWarning>
-			<body
-				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-			>
+			<body className={`${inter.variable} antialiased`}>
 				<GlobalProvider>{children}</GlobalProvider>
 			</body>
 		</html>

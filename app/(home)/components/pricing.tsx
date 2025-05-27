@@ -6,11 +6,11 @@ const Pricing = () => {
 	return (
 		<div className="container mx-auto px-4 md:px-6">
 			<div className="text-center mb-12">
-				<h2 className="text-3xl font-bold tracking-tighter md:text-4xl">
-					Simple, transparent pricing
+				<h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+					Choose the Perfect <span className="text-gradient">Plan</span> for You
 				</h2>
-				<p className="mt-4 text-xl text-muted-foreground max-w-2xl mx-auto">
-					Start for free, upgrade when you're ready
+				<p className="text-xl text-gray-600 max-w-2xl mx-auto">
+					No hidden fees or surprises. Cancel anytime.
 				</p>
 			</div>
 			<div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -39,11 +39,11 @@ const Pricing = () => {
 					</ul>
 					<Link href="/signup">
 						<Button className="w-full" variant="outline">
-							Get started
+							Start Free
 						</Button>
 					</Link>
 				</div>
-				<div className="flex flex-col p-6 bg-gradient-to-b rounded-xl border border-blue-200 shadow-md relative">
+				<div className="flex flex-col p-6 bg-gradient-to-b rounded-xl border border-blue-200 shadow-md relative ring-2 ring-sky-600 ring-opacity-50">
 					<div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-sky-600 text-white px-4 py-1 rounded-full text-sm font-medium">
 						Most Popular
 					</div>
@@ -74,7 +74,9 @@ const Pricing = () => {
 						</li>
 					</ul>
 					<Link href="/signup">
-						<Button className="w-full text-white">Get started</Button>
+						<Button className="w-full text-white">
+							Start 14-Day Free Trial
+						</Button>
 					</Link>
 				</div>
 				<div className="flex flex-col p-6  rounded-xl border shadow-sm">

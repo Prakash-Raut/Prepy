@@ -1,11 +1,64 @@
-import { BarChart, CheckCircle, Code, Users } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+	Award,
+	BarChart3,
+	MessageSquare,
+	Target,
+	Video,
+	Zap,
+} from "lucide-react";
+
+const features = [
+	{
+		id: 1,
+		icon: <Zap className="w-10 h-10 text-white" />,
+		title: "AI-Powered Interviews",
+		description:
+			"Our advanced AI simulates realistic interview scenarios tailored to your industry and role.",
+	},
+	{
+		id: 2,
+		icon: <Target className="w-10 h-10 text-white" />,
+		title: "Personalized Feedback",
+		description:
+			"Get instant, detailed feedback on your responses to improve your interview skills.",
+	},
+	{
+		id: 3,
+		icon: <BarChart3 className="w-10 h-10 text-white" />,
+		title: "Performance Analytics",
+		description:
+			"Track your progress over time with detailed metrics and improvement suggestions.",
+	},
+	{
+		id: 4,
+		icon: <Award className="w-10 h-10 text-white" />,
+		title: "Industry-Specific Questions",
+		description:
+			"Practice with real questions from your target companies and industry verticals.",
+	},
+	{
+		id: 5,
+		icon: <Video className="w-10 h-10 text-white" />,
+		title: "Video Recording",
+		description:
+			"Record your interviews to analyze your body language, tone, and presentation.",
+	},
+	{
+		id: 6,
+		icon: <MessageSquare className="w-10 h-10 text-white" />,
+		title: "Communication Coaching",
+		description:
+			"Improve your communication skills with AI-powered language and delivery analysis.",
+	},
+];
 
 const Feature = () => {
 	return (
 		<div className="container mx-auto px-4 md:px-6">
 			<div className="text-center mb-12">
-				<h2 className="text-3xl font-bold tracking-tighter md:text-4xl">
-					Everything you need to succeed
+				<h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-4">
+					Everything You Need to <span className="text-gradient">Succeed</span>
 				</h2>
 				<p className="mt-4 text-xl text-muted-foreground max-w-2xl mx-auto">
 					Comprehensive interview preparation tools designed to help you land
@@ -13,84 +66,39 @@ const Feature = () => {
 				</p>
 			</div>
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-				<div className="flex flex-col p-6  rounded-xl border shadow-sm">
-					<div className="rounded-full bg-blue-100 w-12 h-12 flex items-center justify-center mb-4">
-						<Code className="h-6 w-6 text-blue-600" />
+				{features.map((feature) => (
+					<div
+						key={feature.id}
+						className="group relative overflow-hidden bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100"
+					>
+						<div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-600 to-blue-800 transform -translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out z-0 opacity-90" />
+
+						<div className="relative z-10 p-8">
+							<div className="mb-6 bg-blue-100 group-hover:bg-blue-700/30 w-16 h-16 rounded-xl flex items-center justify-center transition-colors duration-300">
+								<div className="text-blue-800 group-hover:text-white transition-colors duration-300">
+									{feature.icon}
+								</div>
+							</div>
+
+							<h3 className="text-xl font-bold mb-3 group-hover:text-white transition-colors duration-300">
+								{feature.title}
+							</h3>
+
+							<p className="text-gray-600 group-hover:text-blue-50 transition-colors duration-300">
+								{feature.description}
+							</p>
+
+							<div className="mt-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-4 group-hover:translate-y-0">
+								<Button
+									variant="ghost"
+									className="px-0 text-white hover:text-white hover:bg-transparent p-0"
+								>
+									Learn more →
+								</Button>
+							</div>
+						</div>
 					</div>
-					<h3 className="text-xl font-bold mb-2">Technical Interviews</h3>
-					<p className="text-muted-foreground flex-grow">
-						Practice coding challenges, algorithms, and data structures with
-						real-time feedback.
-					</p>
-					<div className="mt-4 pt-4 border-t">
-						<ul className="space-y-2">
-							<li className="flex items-center gap-2">
-								<CheckCircle className="h-4 w-4 text-green-500" />
-								<span className="text-sm">Multiple programming languages</span>
-							</li>
-							<li className="flex items-center gap-2">
-								<CheckCircle className="h-4 w-4 text-green-500" />
-								<span className="text-sm">Code execution & validation</span>
-							</li>
-							<li className="flex items-center gap-2">
-								<CheckCircle className="h-4 w-4 text-green-500" />
-								<span className="text-sm">Detailed explanations</span>
-							</li>
-						</ul>
-					</div>
-				</div>
-				<div className="flex flex-col p-6  rounded-xl border shadow-sm">
-					<div className="rounded-full bg-blue-100 w-12 h-12 flex items-center justify-center mb-4">
-						<Users className="h-6 w-6 text-blue-600" />
-					</div>
-					<h3 className="text-xl font-bold mb-2">Behavioral Interviews</h3>
-					<p className="text-muted-foreground flex-grow">
-						Master the art of storytelling and showcase your soft skills with
-						structured practice.
-					</p>
-					<div className="mt-4 pt-4 border-t">
-						<ul className="space-y-2">
-							<li className="flex items-center gap-2">
-								<CheckCircle className="h-4 w-4 text-green-500" />
-								<span className="text-sm">STAR method guidance</span>
-							</li>
-							<li className="flex items-center gap-2">
-								<CheckCircle className="h-4 w-4 text-green-500" />
-								<span className="text-sm">Company-specific questions</span>
-							</li>
-							<li className="flex items-center gap-2">
-								<CheckCircle className="h-4 w-4 text-green-500" />
-								<span className="text-sm">Personalized feedback</span>
-							</li>
-						</ul>
-					</div>
-				</div>
-				<div className="flex flex-col p-6  rounded-xl border shadow-sm">
-					<div className="rounded-full bg-blue-100 w-12 h-12 flex items-center justify-center mb-4">
-						<BarChart className="h-6 w-6 text-blue-600" />
-					</div>
-					<h3 className="text-xl font-bold mb-2">System Design</h3>
-					<p className="text-muted-foreground flex-grow">
-						Learn to design scalable systems and articulate your thought process
-						clearly.
-					</p>
-					<div className="mt-4 pt-4 border-t">
-						<ul className="space-y-2">
-							<li className="flex items-center gap-2">
-								<CheckCircle className="h-4 w-4 text-green-500" />
-								<span className="text-sm">Interactive whiteboarding</span>
-							</li>
-							<li className="flex items-center gap-2">
-								<CheckCircle className="h-4 w-4 text-green-500" />
-								<span className="text-sm">Architecture best practices</span>
-							</li>
-							<li className="flex items-center gap-2">
-								<CheckCircle className="h-4 w-4 text-green-500" />
-								<span className="text-sm">Real-world scenarios</span>
-							</li>
-						</ul>
-					</div>
-				</div>
+				))}
 			</div>
 		</div>
 	);

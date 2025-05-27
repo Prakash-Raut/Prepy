@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { PlayIcon } from "lucide-react";
+import { PlayIcon, VideoIcon } from "lucide-react";
 
 const Hero = () => {
 	return (
@@ -19,7 +19,7 @@ const Hero = () => {
 				<h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
 					Ace your next <span className="text-sky-500">Interview</span>
 					<br />
-					<span className="text-gray-700">with AI Preparation</span>
+					<span className="text-gradient">with AI Preparation</span>
 				</h1>
 
 				{/* Subtitle */}
@@ -38,10 +38,11 @@ const Hero = () => {
 						Start Free Practice
 					</Button>
 					<Button
-						variant="ghost"
+						variant="outline"
 						size="lg"
 						className="text-gray-700 px-8 py-3 text-lg"
 					>
+						<VideoIcon size={20} />
 						Watch Demo
 					</Button>
 				</div>

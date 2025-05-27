@@ -63,9 +63,13 @@ const testimonials = [
 
 const Testimonial = () => (
 	<div className="container mx-auto px-4 h-full w-full md:px-6">
-		<h2 className="mb-10 text-3xl md:text-4xl font-bold text-center tracking-tight">
-			Testimonials
+		<h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-4">
+			Hear From Our <span className="text-gradient">Success Stories</span>
 		</h2>
+		<p className="text-xl text-gray-600 max-w-2xl mx-auto text-center mb-10">
+			Join thousands of professionals who've transformed their careers with
+			Prepy.
+		</p>
 		<div className="relative">
 			<div className="z-10 absolute left-0 inset-y-0 w-[15%] bg-gradient-to-r from-background to-transparent" />
 			<div className="z-10 absolute right-0 inset-y-0 w-[15%] bg-gradient-to-l from-background to-transparent" />

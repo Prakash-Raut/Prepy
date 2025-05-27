@@ -54,7 +54,7 @@ const FAQ = () => {
 	return (
 		<div className="container mx-auto px-4 md:px-6 flex items-center justify-center">
 			<div className="w-full max-w-2xl">
-				<h2 className="text-3xl md:text-4xl !leading-[1.15] font-bold tracking-tight text-center">
+				<h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-4">
 					Frequently Asked Questions
 				</h2>
 				<p className="mt-1.5 text-lg text-muted-foreground text-center">
