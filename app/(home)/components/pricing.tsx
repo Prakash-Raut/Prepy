@@ -1,3 +1,4 @@
+import { MotionDiv } from "@/lib/dynamic-motion";
 import { CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { Button } from "../../../components/ui/button";
@@ -6,12 +7,20 @@ const Pricing = () => {
 	return (
 		<div className="container mx-auto px-4 md:px-6">
 			<div className="text-center mb-12">
-				<h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-					Choose the Perfect <span className="text-gradient">Plan</span> for You
-				</h2>
-				<p className="text-xl text-gray-600 max-w-2xl mx-auto">
-					No hidden fees or surprises. Cancel anytime.
-				</p>
+				<MotionDiv
+					initial={{ opacity: 0, y: 20 }}
+					whileInView={{ opacity: 1, y: 0 }}
+					viewport={{ once: true }}
+					transition={{ duration: 0.5 }}
+				>
+					<h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+						Choose the Perfect <span className="text-gradient">Plan</span> for
+						You
+					</h2>
+					<p className="text-xl text-gray-600 max-w-2xl mx-auto">
+						No hidden fees or surprises. Cancel anytime.
+					</p>
+				</MotionDiv>
 			</div>
 			<div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
 				<div className="flex flex-col p-6  rounded-xl border shadow-sm">

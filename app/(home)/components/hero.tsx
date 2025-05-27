@@ -28,7 +28,6 @@ const Hero = () => {
 					role. Get real-time feedback, improve your answers, and land your
 					dream job with confidence.
 				</p>
-
 				{/* CTA Buttons */}
 				<div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
 					<Button

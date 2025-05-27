@@ -1,3 +1,4 @@
+import { MotionDiv } from "@/lib/dynamic-motion";
 import { cn } from "@/lib/utils";
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { PlusIcon } from "lucide-react";
@@ -54,13 +55,19 @@ const FAQ = () => {
 	return (
 		<div className="container mx-auto px-4 md:px-6 flex items-center justify-center">
 			<div className="w-full max-w-2xl">
-				<h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-4">
-					Frequently Asked Questions
-				</h2>
-				<p className="mt-1.5 text-lg text-muted-foreground text-center">
-					Quick answers to common questions about our products and services.
-				</p>
-
+				<MotionDiv
+					initial={{ opacity: 0, y: 20 }}
+					whileInView={{ opacity: 1, y: 0 }}
+					viewport={{ once: true }}
+					transition={{ duration: 0.5 }}
+				>
+					<h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-4">
+						Frequently Asked Questions
+					</h2>
+					<p className="mt-1.5 text-lg text-muted-foreground text-center">
+						Quick answers to common questions about our products and services.
+					</p>
+				</MotionDiv>
 				<Accordion
 					type="single"
 					collapsible

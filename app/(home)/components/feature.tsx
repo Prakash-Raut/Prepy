@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { MotionDiv, MotionH2, MotionP } from "@/lib/dynamic-motion";
 import {
 	Award,
 	BarChart3,
@@ -57,47 +58,66 @@ const Feature = () => {
 	return (
 		<div className="container mx-auto px-4 md:px-6">
 			<div className="text-center mb-12">
-				<h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-4">
-					Everything You Need to <span className="text-gradient">Succeed</span>
-				</h2>
-				<p className="mt-4 text-xl text-muted-foreground max-w-2xl mx-auto">
-					Comprehensive interview preparation tools designed to help you land
-					your dream job.
-				</p>
+				<MotionH2
+					className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6"
+					initial={{ opacity: 0, y: 20 }}
+					whileInView={{ opacity: 1, y: 0 }}
+					viewport={{ once: true }}
+					transition={{ duration: 0.5 }}
+				>
+					Everything You Need to{" "}
+					<span className="text-gradient font-extrabold">Succeed</span>
+				</MotionH2>
+
+				<MotionP
+					className="text-xl text-gray-600 mx-auto"
+					initial={{ opacity: 0, y: 20 }}
+					whileInView={{ opacity: 1, y: 0 }}
+					viewport={{ once: true }}
+					transition={{ duration: 0.5, delay: 0.1 }}
+				>
+					Prepy combines cutting-edge AI with proven interview techniques to
+					help you land your dream job.
+				</MotionP>
 			</div>
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 				{features.map((feature) => (
-					<div
+					<MotionDiv
 						key={feature.id}
 						className="group relative overflow-hidden bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100"
+						initial={{ opacity: 0, y: 50 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.4, delay: feature.id * 0.1 }}
 					>
-						<div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-600 to-blue-800 transform -translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out z-0 opacity-90" />
+						<div className="group relative overflow-hidden bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+							<div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-600 to-blue-800 transform -translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out z-0 opacity-90" />
 
-						<div className="relative z-10 p-8">
-							<div className="mb-6 bg-blue-100 group-hover:bg-blue-700/30 w-16 h-16 rounded-xl flex items-center justify-center transition-colors duration-300">
-								<div className="text-blue-800 group-hover:text-white transition-colors duration-300">
-									{feature.icon}
+							<div className="relative z-10 p-8">
+								<div className="mb-6 bg-blue-100 group-hover:bg-blue-700/30 w-16 h-16 rounded-xl flex items-center justify-center transition-colors duration-300">
+									<div className="text-blue-800 group-hover:text-white transition-colors duration-300">
+										{feature.icon}
+									</div>
+								</div>
+
+								<h3 className="text-xl font-bold mb-3 group-hover:text-white transition-colors duration-300">
+									{feature.title}
+								</h3>
+
+								<p className="text-gray-600 group-hover:text-blue-50 transition-colors duration-300">
+									{feature.description}
+								</p>
+
+								<div className="mt-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-4 group-hover:translate-y-0">
+									<Button
+										variant="ghost"
+										className="px-0 text-white hover:text-white hover:bg-transparent p-0"
+									>
+										Learn more →
+									</Button>
 								</div>
 							</div>
-
-							<h3 className="text-xl font-bold mb-3 group-hover:text-white transition-colors duration-300">
-								{feature.title}
-							</h3>
-
-							<p className="text-gray-600 group-hover:text-blue-50 transition-colors duration-300">
-								{feature.description}
-							</p>
-
-							<div className="mt-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-4 group-hover:translate-y-0">
-								<Button
-									variant="ghost"
-									className="px-0 text-white hover:text-white hover:bg-transparent p-0"
-								>
-									Learn more →
-								</Button>
-							</div>
 						</div>
-					</div>
+					</MotionDiv>
 				))}
 			</div>
 		</div>

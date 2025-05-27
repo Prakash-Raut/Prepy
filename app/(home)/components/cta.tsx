@@ -1,3 +1,4 @@
+import { MotionDiv } from "@/lib/dynamic-motion";
 import Link from "next/link";
 
 const CTA = () => {
@@ -13,18 +14,25 @@ const CTA = () => {
 				/>
 			</div>
 			<div className="container relative flex flex-col items-center text-center space-y-4 md:space-y-6 max-w-3xl mx-auto">
-				<h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6">
-					Ready to{" "}
-					<span className="relative inline-block">
-						<span className="relative z-10">ace</span>
-						<span className="absolute bottom-1 left-0 w-full h-3 bg-sky-400/30 -z-10 transform -rotate-1" />
-					</span>{" "}
-					your next interview?
-				</h2>
-				<p className="text-xl text-sky-100 mb-10 max-w-2xl mx-auto">
-					Join thousands of professionals who've landed their dream jobs using
-					Prepy.
-				</p>
+				<MotionDiv
+					initial={{ opacity: 0, y: 20 }}
+					whileInView={{ opacity: 1, y: 0 }}
+					viewport={{ once: true }}
+					transition={{ duration: 0.5 }}
+				>
+					<h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6">
+						Ready to{" "}
+						<span className="relative inline-block">
+							<span className="relative z-10">ace</span>
+							<span className="absolute bottom-1 left-0 w-full h-3 bg-blue-400/30 -z-10 transform -rotate-1" />
+						</span>{" "}
+						your next interview?
+					</h2>
+					<p className="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">
+						Join thousands of professionals who've landed their dream jobs using
+						Prepy. Start your free trial today.
+					</p>
+				</MotionDiv>
 				<div className="flex flex-col items-center justify-center gap-2">
 					<Link
 						className="bg-white text-black font-semibold text-sm h-10 w-fit px-4 rounded-full flex items-center justify-center shadow-md"
