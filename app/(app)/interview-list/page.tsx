@@ -1,8 +1,8 @@
-"use client";
-
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { useEffect, useRef, useState } from "react";
+import { createClient } from "@/lib/supabase/server";
+import type { Database } from "@/types/db";
+import { LRUCache } from "lru-cache";
+import { redirect } from "next/navigation";
 import InterviewCard from "./interview-card";
 
 const categories = [
@@ -16,119 +16,43 @@ const categories = [
 	{ id: "marketing", name: "Marketing", icon: "📣" },
 ];
 
-const interviews = [
-	{
-		id: "software-engineering",
-		title: "Software Engineering",
-		description: "New Grad E3: Technical interview #1",
-		duration: 20,
-		difficulty: "Medium",
-		category: "software",
-		backgroundColor: "bg-purple-100",
-	},
-	{
-		id: "stacks-vs-queues",
-		title: "Stacks vs Queues",
-		description: "Learn the FIFO and LIFO flows",
-		duration: 5,
-		difficulty: "Medium",
-		category: "software",
-		backgroundColor: "bg-green-100",
-	},
-	{
-		id: "hash-tables",
-		title: "Hash Tables",
-		description: "Master the magic of key-to-index storage",
-		duration: 5,
-		difficulty: "Medium",
-		category: "software",
-		backgroundColor: "bg-purple-100",
-	},
-	{
-		id: "mvc-models",
-		title: "MVC Models",
-		description: "Explain this core design architecture",
-		duration: 5,
-		difficulty: "Medium",
-		category: "software",
-		backgroundColor: "bg-blue-100",
-	},
-	{
-		id: "binary-search",
-		title: "Binary Search",
-		description: "Optimize search in sorted arrays",
-		duration: 5,
-		difficulty: "Easy",
-		category: "software",
-		backgroundColor: "bg-purple-100",
-	},
-	{
-		id: "dynamic-programming",
-		title: "Dynamic Programming",
-		description: "Master complex optimization problems",
-		duration: 15,
-		difficulty: "Hard",
-		category: "software",
-		backgroundColor: "bg-blue-100",
-	},
-	{
-		id: "system-design",
-		title: "System Design",
-		description: "Design scalable distributed systems",
-		duration: 30,
-		difficulty: "Hard",
-		category: "software",
-		backgroundColor: "bg-green-100",
-	},
-	{
-		id: "react-hooks",
-		title: "React Hooks",
-		description: "Understand functional component state",
-		duration: 10,
-		difficulty: "Medium",
-		category: "software",
-		backgroundColor: "bg-purple-100",
-	},
-];
+const cache = new LRUCache({
+	max: 1000 * 60 * 5, // 5 minutes
+});
 
-export default function InterviewListPage() {
-	const [selectedCategory, setSelectedCategory] = useState("software");
-	const [headerVisible, setHeaderVisible] = useState(true);
-	const lastScrollY = useRef(0);
-	const headerRef = useRef<HTMLDivElement>(null);
+export default async function InterviewListPage() {
+	const supabase = await createClient();
 
-	useEffect(() => {
-		const handleScroll = () => {
-			const currentScrollY = window.scrollY;
+	const { data: session } = await supabase.auth.getUser();
 
-			if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
-				setHeaderVisible(false);
-			} else {
-				setHeaderVisible(true);
-			}
+	if (!session) {
+		redirect("/signin");
+	}
 
-			lastScrollY.current = currentScrollY;
-		};
+	const cacheKey = "predefined-interviews";
 
-		window.addEventListener("scroll", handleScroll, { passive: true });
-		return () => window.removeEventListener("scroll", handleScroll);
-	}, []);
+	let cached = cache.get(
+		cacheKey,
+	) as Database["public"]["Tables"]["PredefinedInterview"]["Row"][];
 
-	const filteredInterviews = interviews.filter(
-		(interview) => interview.category === selectedCategory,
-	);
+	if (!cached) {
+		console.log("Cache miss");
+
+		const { data: predefinedInterviews } = await supabase
+			.from("PredefinedInterview")
+			.select("*");
+
+		if (!predefinedInterviews) {
+			throw new Error("No predefined interviews found");
+		}
+
+		cached = predefinedInterviews;
+		cache.set(cacheKey, predefinedInterviews);
+	}
 
 	return (
 		<div className="min-h-screen px-24">
-			{/* Header Section - This will hide on scroll */}
-			<div
-				ref={headerRef}
-				className={`transition-all duration-300 ${
-					headerVisible
-						? "opacity-100 translate-y-0"
-						: "opacity-0 -translate-y-full"
-				} sticky top-0 z-10 border-b`}
-			>
+			<div className="border-b">
 				<div className="container py-8">
 					<h1 className="text-5xl font-bold text-center">
 						Software mock interviews
@@ -141,7 +65,7 @@ export default function InterviewListPage() {
 			</div>
 
 			{/* Categories */}
-			<div className="border-b sticky top-0 z-10">
+			<div className="border-b">
 				<div className="container py-4">
 					<div className="flex space-x-4 min-w-max justify-center">
 						{categories.map((category) => (
@@ -157,7 +81,7 @@ export default function InterviewListPage() {
 			{/* Interview Cards */}
 			<div className="container py-8">
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-					{filteredInterviews.map((interview) => (
+					{cached.map((interview) => (
 						<InterviewCard key={interview.id} interview={interview} />
 					))}
 				</div>

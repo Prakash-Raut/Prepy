@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import Link from "next/link";
 import { NavMenu } from "./nav-menu";
 import { NavigationSheet } from "./navigation-sheet";
 
-const Navbar04Page = () => {
+const Navbar = () => {
 	return (
 		<div className="bg-muted">
 			<nav className="fixed top-6 inset-x-4 h-16 bg-background border dark:border-slate-700/70 max-w-screen-xl mx-auto rounded-full">
@@ -27,8 +28,9 @@ const Navbar04Page = () => {
 						<Button
 							variant="outline"
 							className="hidden sm:inline-flex rounded-full"
+							asChild
 						>
-							Sign In
+							<Link href="/signin">Sign in</Link>
 						</Button>
 						<Button className="rounded-full">Try for Free</Button>
 
@@ -43,4 +45,4 @@ const Navbar04Page = () => {
 	);
 };
 
-export default Navbar04Page;
+export default Navbar;

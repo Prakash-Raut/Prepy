@@ -21,7 +21,7 @@ export function Sidebar() {
 		},
 		{
 			name: "Explore",
-			href: "#",
+			href: "/explore",
 			icon: Search,
 		},
 		{
@@ -31,7 +31,7 @@ export function Sidebar() {
 		},
 		{
 			name: "Settings",
-			href: "#",
+			href: "/settings",
 			icon: Settings,
 		},
 	];

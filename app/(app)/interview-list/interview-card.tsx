@@ -1,18 +1,25 @@
-import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import type { Database } from "@/types/db";
 import { Clock } from "lucide-react";
 import Link from "next/link";
 
-type Interview = {
-	id: string;
-	title: string;
-	description: string;
-	duration: number;
-	difficulty: string;
-	category: string;
-	backgroundColor: string;
+type PredefinedInterview =
+	Database["public"]["Tables"]["PredefinedInterview"]["Row"];
+
+const bgMap = {
+	EASY: "bg-sky-100",
+	MEDIUM: "bg-amber-100",
+	HARD: "bg-red-100",
 };
 
-const InterviewCard = ({ interview }: { interview: Interview }) => {
+const difficultyMap = {
+	EASY: "bg-green-500 hover:bg-green-600",
+	MEDIUM: "bg-amber-500 hover:bg-amber-600",
+	HARD: "bg-red-500 hover:bg-red-600",
+};
+
+const InterviewCard = ({ interview }: { interview: PredefinedInterview }) => {
 	return (
 		<Link
 			href={`/practice-interview/${interview.id}`}
@@ -21,7 +28,10 @@ const InterviewCard = ({ interview }: { interview: Interview }) => {
 		>
 			<div className="rounded-xl overflow-hidden h-full flex flex-col">
 				<div
-					className={`${interview.backgroundColor} p-8 flex items-center justify-center`}
+					className={cn(
+						"p-8 flex items-center justify-center",
+						bgMap[interview.difficulty],
+					)}
 				>
 					<div className="h-16 w-16 rounded-full flex items-center justify-center shadow-md">
 						<span className="text-indigo-500 font-bold text-2xl">P</span>
@@ -35,12 +45,14 @@ const InterviewCard = ({ interview }: { interview: Interview }) => {
 							<Clock className="h-4 w-4" />
 							<span className="text-sm">{interview.duration}m</span>
 						</div>
-						<Button
-							size="sm"
-							className={`text-sm ${interview.difficulty === "Easy" ? "bg-green-500 text-white hover:bg-green-600" : interview.difficulty === "Medium" ? "bg-yellow-500 text-black hover:bg-yellow-600" : "bg-red-500 text-white hover:bg-red-600"}`}
+						<Badge
+							className={cn(
+								"text-sm text-white capitalize",
+								difficultyMap[interview.difficulty],
+							)}
 						>
 							{interview.difficulty}
-						</Button>
+						</Badge>
 					</div>
 				</div>
 			</div>

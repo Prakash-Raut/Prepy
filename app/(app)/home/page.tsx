@@ -1,16 +1,105 @@
-import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
 	Card,
 	CardContent,
-	CardDescription,
 	CardFooter,
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { BarChart, BookOpen, Clock, Code, Users } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
+import type { Database } from "@/types/db";
+import { format } from "date-fns";
+import { LRUCache } from "lru-cache";
+import { BarChart, BookOpen, ClockIcon, Code, Users } from "lucide-react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
-export default function Dashboard() {
+const cache = new LRUCache({
+	max: 1000 * 60 * 5, // 5 minutes
+});
+
+export default async function Dashboard() {
+	const supabase = await createClient();
+
+	const { data: session } = await supabase.auth.getUser();
+
+	if (!session) {
+		redirect("/signin");
+	}
+
+	const cacheKey = "dashboard-stats";
+	let cached = cache.get(cacheKey) as {
+		user: Database["public"]["Tables"]["User"]["Row"];
+		totalInterviews: number;
+		technicalInterviews: number;
+		behavioralInterviews: number;
+		systemDesignInterviews: number;
+		recentInterviews: Database["public"]["Tables"]["Interview"]["Row"][];
+	};
+
+	if (!cached) {
+		console.log("Cache miss");
+
+		const { data: user } = await supabase
+			.from("User")
+			.select("*")
+			.eq("id", session?.user?.id)
+			.single();
+
+		if (!user) {
+			throw new Error("User not found");
+		}
+
+		const [
+			{ count: total },
+			{ count: technical },
+			{ count: behavioral },
+			{ count: systemDesign },
+			{ data: recent, error: recentError },
+		] = await Promise.all([
+			supabase
+				.from("interview")
+				.select("*", { count: "exact", head: true })
+				.eq("userId", user.id),
+
+			supabase
+				.from("interview")
+				.select("*", { count: "exact", head: true })
+				.eq("userId", user.id)
+				.eq("interviewType", "TECHNICAL"),
+
+			supabase
+				.from("interview")
+				.select("*", { count: "exact", head: true })
+				.eq("userId", user.id)
+				.eq("interviewType", "BEHAVIORAL"),
+
+			supabase
+				.from("interview")
+				.select("*", { count: "exact", head: true })
+				.eq("userId", user.id)
+				.eq("interviewType", "SYSTEM_DESIGN"),
+
+			supabase
+				.from("interview")
+				.select("*")
+				.eq("userId", user.id)
+				.order("createdAt", { ascending: false })
+				.limit(3),
+		]);
+
+		cached = {
+			user: user as Database["public"]["Tables"]["User"]["Row"],
+			totalInterviews: total ?? 0,
+			technicalInterviews: technical ?? 0,
+			behavioralInterviews: behavioral ?? 0,
+			systemDesignInterviews: systemDesign ?? 0,
+			recentInterviews: recent ?? [],
+		};
+
+		cache.set(cacheKey, cached);
+	}
+
 	return (
 		<div className="flex min-h-screen flex-col px-24">
 			{/* Main Content */}
@@ -18,13 +107,16 @@ export default function Dashboard() {
 				<div className="container">
 					<div className="flex flex-col gap-8">
 						{/* Welcome Section */}
-						<div>
-							<h1 className="text-3xl font-bold tracking-tight">
-								Welcome back, John!
-							</h1>
-							<p className="text-muted-foreground mt-2">
-								Continue your interview preparation journey.
-							</p>
+						<div className="flex items-center gap-8">
+							<Cube />
+							<div>
+								<h1 className="text-3xl font-bold tracking-tight">
+									Welcome back, {cached.user?.name}!
+								</h1>
+								<p className="text-muted-foreground mt-2">
+									Continue your interview preparation journey.
+								</p>
+							</div>
 						</div>
 
 						{/* Stats */}
@@ -37,9 +129,11 @@ export default function Dashboard() {
 									<BookOpen className="h-4 w-4 text-muted-foreground" />
 								</CardHeader>
 								<CardContent>
-									<div className="text-2xl font-bold">12</div>
+									<div className="text-2xl font-bold">
+										{cached.totalInterviews}
+									</div>
 									<p className="text-xs text-muted-foreground">
-										+2 from last week
+										+{cached.totalInterviews - 1} from last week
 									</p>
 								</CardContent>
 							</Card>
@@ -51,7 +145,9 @@ export default function Dashboard() {
 									<Code className="h-4 w-4 text-muted-foreground" />
 								</CardHeader>
 								<CardContent>
-									<div className="text-2xl font-bold">5</div>
+									<div className="text-2xl font-bold">
+										{cached.technicalInterviews}
+									</div>
 									<p className="text-xs text-muted-foreground">
 										Average score: 8.2/10
 									</p>
@@ -65,7 +161,9 @@ export default function Dashboard() {
 									<Users className="h-4 w-4 text-muted-foreground" />
 								</CardHeader>
 								<CardContent>
-									<div className="text-2xl font-bold">4</div>
+									<div className="text-2xl font-bold">
+										{cached.behavioralInterviews}
+									</div>
 									<p className="text-xs text-muted-foreground">
 										Average score: 7.8/10
 									</p>
@@ -79,7 +177,9 @@ export default function Dashboard() {
 									<BarChart className="h-4 w-4 text-muted-foreground" />
 								</CardHeader>
 								<CardContent>
-									<div className="text-2xl font-bold">3</div>
+									<div className="text-2xl font-bold">
+										{cached.systemDesignInterviews}
+									</div>
 									<p className="text-xs text-muted-foreground">
 										Average score: 7.5/10
 									</p>
@@ -93,194 +193,78 @@ export default function Dashboard() {
 							<Card>
 								<CardContent className="p-0">
 									<div className="divide-y">
-										<div className="flex items-center justify-between p-4">
-											<div className="flex items-center gap-4">
-												<div className="rounded-full bg-purple-100 p-2">
-													<Code className="h-4 w-4 text-purple-600" />
+										{cached.recentInterviews.map((interview) => (
+											<div key={interview.id} className="flex items-center p-4">
+												<div className="flex items-center gap-4">
+													<div className="rounded-full bg-sky-100 p-2">
+														<Code className="h-4 w-4 text-sky-600" />
+													</div>
 												</div>
-												<div>
+												<div className="flex-1 px-2">
 													<p className="font-medium">
-														Technical Interview: Algorithms & Data Structures
+														Software Engineer Interview:{" "}
+														{interview.interviewType}
 													</p>
+													<div className="flex items-center gap-4 pt-2">
+														<Badge className="bg-green-100 text-green-600">
+															Easy
+														</Badge>
+														<span className="flex items-center gap-2 text-sm text-muted-foreground">
+															<ClockIcon size={16} />
+															{interview.durationMins} minutes
+														</span>
+													</div>
+												</div>
+												<div className="text-right">
+													<p className="font-medium">8.5/10</p>
 													<p className="text-sm text-muted-foreground">
-														Medium difficulty • 30 minutes
+														{format(interview.createdAt, "MMM d, yyyy")}
 													</p>
 												</div>
 											</div>
-											<div className="text-right">
-												<p className="font-medium">8.5/10</p>
-												<p className="text-sm text-muted-foreground">
-													2 days ago
-												</p>
-											</div>
-										</div>
-										<div className="flex items-center justify-between p-4">
-											<div className="flex items-center gap-4">
-												<div className="rounded-full bg-purple-100 p-2">
-													<Users className="h-4 w-4 text-purple-600" />
-												</div>
-												<div>
-													<p className="font-medium">
-														Behavioral Interview: Leadership & Teamwork
-													</p>
-													<p className="text-sm text-muted-foreground">
-														Easy difficulty • 20 minutes
-													</p>
-												</div>
-											</div>
-											<div className="text-right">
-												<p className="font-medium">7.8/10</p>
-												<p className="text-sm text-muted-foreground">
-													4 days ago
-												</p>
-											</div>
-										</div>
-										<div className="flex items-center justify-between p-4">
-											<div className="flex items-center gap-4">
-												<div className="rounded-full bg-purple-100 p-2">
-													<BarChart className="h-4 w-4 text-purple-600" />
-												</div>
-												<div>
-													<p className="font-medium">
-														System Design: E-commerce Platform
-													</p>
-													<p className="text-sm text-muted-foreground">
-														Hard difficulty • 45 minutes
-													</p>
-												</div>
-											</div>
-											<div className="text-right">
-												<p className="font-medium">7.2/10</p>
-												<p className="text-sm text-muted-foreground">
-													1 week ago
-												</p>
-											</div>
-										</div>
+										))}
 									</div>
 								</CardContent>
 								<CardFooter className="border-t p-4">
 									<Link
-										href="/dashboard/history"
-										className="text-sm text-purple-600 hover:text-purple-500"
+										href="#"
+										className="text-sm text-sky-600 hover:text-sky-500"
 									>
 										View all activity
 									</Link>
 								</CardFooter>
 							</Card>
 						</div>
-
-						{/* Recommended Interviews */}
-						<div>
-							<div className="flex items-center justify-between mb-4">
-								<h2 className="text-xl font-bold">Recommended for You</h2>
-								<Link href="/interviews">
-									<Button variant="outline" size="sm">
-										View all
-									</Button>
-								</Link>
-							</div>
-							<div className="grid gap-4 md:grid-cols-3">
-								<Card>
-									<CardHeader>
-										<div className="flex items-center gap-2 mb-2">
-											<div className="rounded-full bg-purple-100 p-2">
-												<Code className="h-4 w-4 text-purple-600" />
-											</div>
-											<span className="text-sm font-medium text-purple-600">
-												Technical
-											</span>
-										</div>
-										<CardTitle>System Design Patterns</CardTitle>
-										<CardDescription>
-											Practice implementing common design patterns in real-world
-											scenarios.
-										</CardDescription>
-									</CardHeader>
-									<CardContent>
-										<div className="flex items-center gap-2 text-sm text-muted-foreground">
-											<Clock className="h-4 w-4" />
-											<span>30 minutes</span>
-										</div>
-										<div className="mt-2 flex items-center gap-2">
-											<span className="inline-block h-2 w-2 rounded-full bg-orange-500" />
-											<span className="text-sm">Medium difficulty</span>
-										</div>
-									</CardContent>
-									<CardFooter>
-										<Link href="/interview/technical-1">
-											<Button className="w-full">Start Interview</Button>
-										</Link>
-									</CardFooter>
-								</Card>
-								<Card>
-									<CardHeader>
-										<div className="flex items-center gap-2 mb-2">
-											<div className="rounded-full bg-purple-100 p-2">
-												<Users className="h-4 w-4 text-purple-600" />
-											</div>
-											<span className="text-sm font-medium text-purple-600">
-												Behavioral
-											</span>
-										</div>
-										<CardTitle>Conflict Resolution</CardTitle>
-										<CardDescription>
-											Improve your ability to discuss how you handle workplace
-											conflicts.
-										</CardDescription>
-									</CardHeader>
-									<CardContent>
-										<div className="flex items-center gap-2 text-sm text-muted-foreground">
-											<Clock className="h-4 w-4" />
-											<span>20 minutes</span>
-										</div>
-										<div className="mt-2 flex items-center gap-2">
-											<span className="inline-block h-2 w-2 rounded-full bg-green-500" />
-											<span className="text-sm">Easy difficulty</span>
-										</div>
-									</CardContent>
-									<CardFooter>
-										<Link href="/interview/behavioral-1">
-											<Button className="w-full">Start Interview</Button>
-										</Link>
-									</CardFooter>
-								</Card>
-								<Card>
-									<CardHeader>
-										<div className="flex items-center gap-2 mb-2">
-											<div className="rounded-full bg-purple-100 p-2">
-												<BarChart className="h-4 w-4 text-purple-600" />
-											</div>
-											<span className="text-sm font-medium text-purple-600">
-												System Design
-											</span>
-										</div>
-										<CardTitle>Distributed Cache System</CardTitle>
-										<CardDescription>
-											Design a scalable distributed caching system for a
-											high-traffic application.
-										</CardDescription>
-									</CardHeader>
-									<CardContent>
-										<div className="flex items-center gap-2 text-sm text-muted-foreground">
-											<Clock className="h-4 w-4" />
-											<span>45 minutes</span>
-										</div>
-										<div className="mt-2 flex items-center gap-2">
-											<span className="inline-block h-2 w-2 rounded-full bg-red-500" />
-											<span className="text-sm">Hard difficulty</span>
-										</div>
-									</CardContent>
-									<CardFooter>
-										<Link href="/interview/system-design-1">
-											<Button className="w-full">Start Interview</Button>
-										</Link>
-									</CardFooter>
-								</Card>
-							</div>
-						</div>
 					</div>
 				</div>
 			</main>
+		</div>
+	);
+}
+
+function Cube() {
+	return (
+		<div className="size-40 p-10">
+			<div className="size-20 rotate-[0.75_1_0.75_45deg] transform-3d">
+				<div className="absolute inset-0 translate-z-12 rotate-x-0 bg-sky-300/75 text-center text-4xl leading-20 font-bold text-sky-900 backface-visible dark:bg-sky-400/85 dark:text-white">
+					1
+				</div>
+				<div className="absolute inset-0 -translate-z-12 rotate-y-180 bg-sky-300/75 text-center text-4xl leading-20 font-bold text-sky-900 opacity-75 backface-visible dark:bg-sky-400/85 dark:text-white">
+					2
+				</div>
+				<div className="absolute inset-0 translate-x-12 rotate-y-90 bg-sky-300/75 text-center text-4xl leading-20 font-bold text-sky-900 opacity-75 backface-visible dark:bg-sky-400/85 dark:text-white">
+					3
+				</div>
+				<div className="absolute inset-0 -translate-x-12 -rotate-y-90 bg-sky-300/75 text-center text-4xl leading-20 font-bold text-sky-900 backface-visible dark:bg-sky-400/85 dark:text-white">
+					4
+				</div>
+				<div className="absolute inset-0 -translate-y-12 rotate-x-90 bg-sky-300/75 text-center text-4xl leading-20 font-bold text-sky-900 opacity-75 backface-visible dark:bg-sky-400/85 dark:text-white">
+					5
+				</div>
+				<div className="absolute inset-0 translate-y-12 -rotate-x-90 bg-sky-300/75 text-center text-4xl leading-20 font-bold text-sky-900 backface-visible dark:bg-sky-400/85 dark:text-white">
+					6
+				</div>
+			</div>
 		</div>
 	);
 }

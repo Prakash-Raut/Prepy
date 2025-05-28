@@ -40,5 +40,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# prompts
-prompts/
+# scripts
+scripts/
+
+#logs
+logs/
