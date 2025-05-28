@@ -1,6 +1,5 @@
 "use server";
 
-import { logger } from "@/lib/logger";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -32,7 +31,6 @@ export async function login(
 	const { error } = await supabase.auth.signInWithPassword(result.data);
 
 	if (error) {
-		logger.error(error.message);
 		return {
 			type: "error",
 			message: error.message,
