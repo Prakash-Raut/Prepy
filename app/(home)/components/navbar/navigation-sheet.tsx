@@ -12,14 +12,17 @@ export const NavigationSheet = () => {
 					<Menu />
 				</Button>
 			</SheetTrigger>
-			<SheetContent>
+			<SheetContent className="p-4">
 				<div className="flex items-center gap-2">
 					<div className="h-8 w-8 rounded-xl flex items-center justify-center">
 						<Image src="/prepy-logo-2.png" alt="Logo" width={48} height={48} />
 					</div>
 					<span className="text-xl font-bold">Prepy</span>
 				</div>
-				<NavMenu orientation="vertical" className="mt-12" />
+				<NavMenu
+					orientation="vertical"
+					className="mt-4 justify-start items-start"
+				/>
 			</SheetContent>
 		</Sheet>
 	);

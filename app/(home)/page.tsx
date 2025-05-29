@@ -23,35 +23,35 @@ export default function LandingPage() {
 		<div className="flex flex-col min-h-screen">
 			<Navbar />
 
-			<section className="px-24 md:py-28">
+			<section className="sm:px-24 md:py-28 lg:px-10">
 				<Hero />
 			</section>
 
-			<section className="px-24 py-10">
+			<section className="sm:px-24 py-1 lg:px-10">
 				<FloatingCompanyLogos />
 			</section>
 
-			<section id="features" className="py-20 px-24">
+			<section id="features" className="sm:px-24 py-20 lg:px-10">
 				<Feature />
 			</section>
 
-			<section id="how-it-works" className="py-20 px-24">
+			<section id="how-it-works" className="sm:px-24 py-20 lg:px-10">
 				<HowItWorks />
 			</section>
 
-			<section id="testimonials" className="py-20 px-24">
+			<section id="testimonials" className="sm:px-24 py-20 lg:px-10">
 				<Testimonial />
 			</section>
 
-			<section id="pricing" className="py-20 px-24 ">
+			<section id="pricing" className="sm:px-24 py-20 lg:px-10">
 				<Pricing />
 			</section>
 
-			<section id="faq" className="py-20 px-24">
+			<section id="faq" className="sm:px-24 py-20 lg:px-10">
 				<FAQ />
 			</section>
 
-			<section className="py-20 px-24">
+			<section className="sm:px-24 py-20 lg:px-10">
 				<CTA />
 			</section>
 

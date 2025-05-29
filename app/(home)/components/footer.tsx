@@ -136,7 +136,7 @@ const socialLinks = [
 
 export default function Footer() {
 	return (
-		<footer className="bg-sky-900 text-white pt-20 pb-10 px-24">
+		<footer className="bg-sky-900 text-white pt-20 pb-10 sm:px-24 lg:px-10">
 			<div className="container mx-auto px-4">
 				{/* Trust badges */}
 				<div className="mb-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 border-b border-sky-800 pb-16">
