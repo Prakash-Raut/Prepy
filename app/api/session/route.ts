@@ -1,10 +1,11 @@
 "use server";
 
-import { getSystemPrompt } from "@/lib/load-prompt";
+import { SYSTEM_PROMPT } from "@/lib/system_prompt";
+// import { getSystemPrompt } from "@/lib/load-prompt";
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
-	const SYSTEM_PROMPT = await getSystemPrompt();
+	// const SYSTEM_PROMPT = await getSystemPrompt();
 	try {
 		const r = await fetch("https://api.openai.com/v1/realtime/sessions", {
 			method: "POST",

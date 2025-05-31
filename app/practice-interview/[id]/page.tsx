@@ -67,9 +67,10 @@ export default function PracticeInterviewPage() {
 	};
 
 	useEffect(() => {
+		let mediaStream: MediaStream;
 		const initializeCamera = async () => {
 			try {
-				const mediaStream = await navigator.mediaDevices.getUserMedia({
+				mediaStream = await navigator.mediaDevices.getUserMedia({
 					video: true,
 					audio: false,
 				});
@@ -89,13 +90,13 @@ export default function PracticeInterviewPage() {
 		initializeCamera();
 
 		return () => {
-			if (stream) {
-				for (const track of stream.getTracks()) {
+			if (mediaStream) {
+				for (const track of mediaStream.getTracks()) {
 					track.stop();
 				}
 			}
 		};
-	}, [stream]);
+	}, []);
 
 	const handleStartInterview = () => {
 		router.push(`/practice-interview/${id}/interview`);
