@@ -12,6 +12,7 @@ import {
 	type FunctionComponent,
 	type ReactNode,
 	createContext,
+	useCallback,
 	useContext,
 	useState,
 } from "react";
@@ -31,7 +32,8 @@ interface DeepgramContextProviderProps {
 }
 
 const getApiKey = async (): Promise<string> => {
-	const response = await fetch("/api/authenticate", { cache: "no-store" });
+	console.log("Im Called");
+	const response = await fetch("/api/authenticate");
 	const result = await response.json();
 	return result.key;
 };
@@ -48,20 +50,22 @@ const DeepgramContextProvider: FunctionComponent<
 	 * @param endpoint - The optional endpoint URL for the Deepgram service.
 	 * @returns A Promise that resolves when the connection is established.
 	 */
-	const connectToDeepgram = async (options: LiveSchema, endpoint?: string) => {
-		const key = await getApiKey();
-		const deepgram = createClient(key);
+	const connectToDeepgram = useCallback(
+		async (options: LiveSchema, endpoint?: string) => {
+			const key = await getApiKey();
+			const deepgram = createClient(key);
+			const conn = deepgram.listen.live(options, endpoint);
+			setConnection(conn);
+		},
+		[],
+	);
 
-		const conn = deepgram.listen.live(options, endpoint);
-		setConnection(conn);
-	};
-
-	const disconnectFromDeepgram = async () => {
+	const disconnectFromDeepgram = useCallback(() => {
 		if (connection) {
 			connection.requestClose();
 			setConnection(null);
 		}
-	};
+	}, [connection]);
 
 	return (
 		<DeepgramContext.Provider

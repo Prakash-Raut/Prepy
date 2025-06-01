@@ -12,6 +12,7 @@ import {
 } from "@/lib/providers/microphone-provider";
 import type { ChildrenProps, OpenAIRealtimeEvent } from "@/types";
 import { format } from "date-fns";
+import { useRouter } from "next/navigation";
 import type React from "react";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 
@@ -45,6 +46,7 @@ const InterviewContext = createContext<InterviewContextType | undefined>(
 );
 
 export const InterviewProvider = ({ children }: ChildrenProps) => {
+	const router = useRouter();
 	const [isMicOn, setIsMicOn] = useState(true);
 	const [isCameraOn, setIsCameraOn] = useState(true);
 	const [isVolumeMuted, setIsVolumeMuted] = useState(false);
@@ -55,6 +57,7 @@ export const InterviewProvider = ({ children }: ChildrenProps) => {
 		"connected" | "disconnected"
 	>("connected");
 	const [interviewProgress, setInterviewProgress] = useState(0);
+	const [hasConnected, setHasConnected] = useState(false);
 
 	const userVideoRef = useRef<HTMLVideoElement>(null);
 	const aiVideoRef = useRef<HTMLVideoElement>(null);
@@ -77,7 +80,8 @@ export const InterviewProvider = ({ children }: ChildrenProps) => {
 
 	// Deepgram Setup
 	useEffect(() => {
-		if (microphoneState === MicrophoneState.Ready) {
+		if (microphoneState === MicrophoneState.Ready && !hasConnected) {
+			setHasConnected(true);
 			connectToDeepgram({
 				model: "nova-3",
 				interim_results: true,
@@ -86,7 +90,7 @@ export const InterviewProvider = ({ children }: ChildrenProps) => {
 				utterance_end_ms: 3000,
 			});
 		}
-	}, [connectToDeepgram, microphoneState]);
+	}, [microphoneState, hasConnected, connectToDeepgram]);
 
 	// Deepgram Realtime
 	useEffect(() => {
@@ -170,7 +174,7 @@ export const InterviewProvider = ({ children }: ChildrenProps) => {
 		const getUserMedia = async () => {
 			try {
 				const stream = await navigator.mediaDevices.getUserMedia({
-					video: true,
+					video: isCameraOn,
 					audio: true,
 				});
 
@@ -194,9 +198,8 @@ export const InterviewProvider = ({ children }: ChildrenProps) => {
 				}
 			}
 		};
-	}, []);
+	}, [isCameraOn]);
 
-	// OpenAI Realtime
 	useEffect(() => {
 		async function init() {
 			const tokenResponse = await fetch("/api/session");
@@ -308,7 +311,7 @@ export const InterviewProvider = ({ children }: ChildrenProps) => {
 		}
 		stopMicrophone();
 		const id = "software-engineer";
-		window.location.href = `/practice-interview/${id}/results`;
+		router.replace(`/practice-interview/${id}/results`);
 	};
 
 	return (

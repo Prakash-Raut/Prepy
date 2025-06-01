@@ -1,9 +1,20 @@
 import PostHogClient from "@/app/posthog";
+import { createClient } from "@/lib/supabase/server";
 import Image from "next/image";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { LoginForm } from "./login-form";
 
-export default function LoginPage() {
+export default async function LoginPage() {
+	const supabase = await createClient();
+	const {
+		data: { session },
+	} = await supabase.auth.getSession();
+
+	if (session) {
+		redirect("/home");
+	}
+
 	const posthog = PostHogClient();
 
 	posthog.capture({

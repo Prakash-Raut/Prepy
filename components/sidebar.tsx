@@ -1,12 +1,20 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Home, Search, Settings, Video } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { createClient } from "@/lib/supabase/client";
+import { Home, Search, Settings, UserIcon, Video } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { redirect, usePathname } from "next/navigation";
 
 export function Sidebar() {
+	const supabase = createClient();
 	const pathname = usePathname();
 
 	const isActive = (path: string) => {
@@ -35,6 +43,11 @@ export function Sidebar() {
 			icon: Settings,
 		},
 	];
+
+	const signOut = async () => {
+		await supabase.auth.signOut();
+		redirect("/signin");
+	};
 
 	return (
 		<div className="fixed left-0 top-0 h-full w-[80px] border-r flex flex-col items-center py-6">
@@ -68,10 +81,18 @@ export function Sidebar() {
 
 			{/* User Profile */}
 			<div className="mt-auto">
-				<Avatar className="h-10 w-10 rounded-xl">
-					<AvatarImage src="/placeholder.svg?height=40&width=40" alt="User" />
-					<AvatarFallback>JD</AvatarFallback>
-				</Avatar>
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<Button variant="outline">
+							<UserIcon />
+						</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent className="w-56" align="start">
+						<DropdownMenuItem onClick={() => signOut()}>
+							Log out
+						</DropdownMenuItem>
+					</DropdownMenuContent>
+				</DropdownMenu>
 			</div>
 		</div>
 	);

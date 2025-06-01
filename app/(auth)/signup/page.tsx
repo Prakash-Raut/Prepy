@@ -1,9 +1,20 @@
 import PostHogClient from "@/app/posthog";
+import { createClient } from "@/lib/supabase/server";
 import Image from "next/image";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { RegisterForm } from "./register-form";
 
-export default function RegisterPage() {
+export default async function RegisterPage() {
+	const supabase = await createClient();
+	const {
+		data: { session },
+	} = await supabase.auth.getSession();
+
+	if (session) {
+		redirect("/home");
+	}
+
 	const posthog = PostHogClient();
 
 	posthog.capture({

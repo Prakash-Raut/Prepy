@@ -32,7 +32,6 @@ export function LoginForm({
 	if (state?.type === "success") {
 		router.push("/home");
 	}
-
 	return (
 		<div className={cn("flex flex-col gap-6", className)} {...props}>
 			<Card>

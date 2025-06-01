@@ -99,7 +99,7 @@ export default function InterviewResultsPage() {
 
 				<div className="flex gap-4 justify-center">
 					<Button
-						onClick={() => router.push("/practice-interview")}
+						onClick={() => router.push("/interview-list")}
 						variant="outline"
 					>
 						Back to Interviews
