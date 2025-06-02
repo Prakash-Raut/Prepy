@@ -214,7 +214,7 @@ export function SignInForm({
 					</Form>
 					<div className="bg-radial from-sidebar-accent to-sidebar relative hidden md:flex flex-col gap-y-4 items-center justify-center">
 						<Image
-							src="/prepy-logo-2.png"
+							src="/interview.svg"
 							alt="Image"
 							className=""
 							width={92}

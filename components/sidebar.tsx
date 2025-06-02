@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -8,12 +7,15 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { authClient } from "@/lib/auth-client";
-import { Home, Search, Settings, UserIcon, Video } from "lucide-react";
+import { Home, Search, Settings, Video } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { GeneratedAvatar } from "./generated-avatar";
+import { Avatar, AvatarImage } from "./ui/avatar";
 
 export function Sidebar() {
+	const session = authClient.useSession();
 	const router = useRouter();
 	const pathname = usePathname();
 
@@ -59,7 +61,7 @@ export function Sidebar() {
 			{/* Logo */}
 			<div className="mb-8">
 				<div className="h-12 w-12 rounded-xl flex items-center justify-center">
-					<Image src="/prepy-logo-2.png" alt="Logo" width={48} height={48} />
+					<Image src="/interview.svg" alt="Logo" width={48} height={48} />
 				</div>
 			</div>
 
@@ -88,9 +90,20 @@ export function Sidebar() {
 			<div className="mt-auto">
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
-						<Button variant="outline">
-							<UserIcon />
-						</Button>
+						{session.data?.user.image ? (
+							<Avatar>
+								<AvatarImage
+									src={session.data.user.image}
+									alt={session.data.user.name ?? "avatar"}
+								/>
+							</Avatar>
+						) : (
+							<GeneratedAvatar
+								seed={session.data?.user.name ?? ""}
+								variant="initials"
+								className="size-9 mr-3"
+							/>
+						)}
 					</DropdownMenuTrigger>
 					<DropdownMenuContent className="w-56" align="start">
 						<DropdownMenuItem onClick={() => signOut()}>

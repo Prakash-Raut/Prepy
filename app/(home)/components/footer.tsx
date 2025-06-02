@@ -157,12 +157,7 @@ export default function Footer() {
 				<div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-16">
 					<div className="col-span-2 lg:col-span-1">
 						<div className="flex items-start gap-2">
-							<Image
-								src="/prepy-logo-2.png"
-								alt="Logo"
-								width={48}
-								height={48}
-							/>
+							<Image src="/interview.svg" alt="Logo" width={48} height={48} />
 							<Link href="/" className="inline-block mb-6">
 								<span className="text-white font-bold text-2xl">Prepy</span>
 							</Link>
@@ -216,12 +211,7 @@ export default function Footer() {
 							Made with ❤️ by Prepy Team
 						</span>
 						<div>
-							<Image
-								src="/prepy-logo-2.png"
-								alt="Logo"
-								width={48}
-								height={48}
-							/>
+							<Image src="/interview.svg" alt="Logo" width={48} height={48} />
 						</div>
 					</div>
 				</div>
