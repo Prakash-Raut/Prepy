@@ -1,22 +1,21 @@
 import { Badge } from "@/components/ui/badge";
+import type { predefinedInterview } from "@/db/schema";
 import { cn } from "@/lib/utils";
-import type { Database } from "@/types/db";
 import { Clock } from "lucide-react";
 import Link from "next/link";
 
-type PredefinedInterview =
-	Database["public"]["Tables"]["PredefinedInterview"]["Row"];
+type PredefinedInterview = typeof predefinedInterview.$inferSelect;
 
 const bgMap = {
-	EASY: "bg-sky-100",
-	MEDIUM: "bg-amber-100",
-	HARD: "bg-red-100",
+	easy: "bg-sky-100",
+	medium: "bg-amber-100",
+	hard: "bg-red-100",
 };
 
 const difficultyMap = {
-	EASY: "bg-green-500 hover:bg-green-600",
-	MEDIUM: "bg-amber-500 hover:bg-amber-600",
-	HARD: "bg-red-500 hover:bg-red-600",
+	easy: "bg-green-500 hover:bg-green-600",
+	medium: "bg-amber-500 hover:bg-amber-600",
+	hard: "bg-red-500 hover:bg-red-600",
 };
 
 const InterviewCard = ({ interview }: { interview: PredefinedInterview }) => {

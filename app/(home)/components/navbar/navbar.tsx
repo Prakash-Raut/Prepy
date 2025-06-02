@@ -30,7 +30,7 @@ const Navbar = () => {
 							className="hidden sm:inline-flex rounded-full"
 							asChild
 						>
-							<Link href="/signin">Sign in</Link>
+							<Link href="/sign-in">Sign in</Link>
 						</Button>
 						<Button className="rounded-full">Try for Free</Button>
 

@@ -7,14 +7,14 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { createClient } from "@/lib/supabase/client";
+import { authClient } from "@/lib/auth-client";
 import { Home, Search, Settings, UserIcon, Video } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { redirect, usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export function Sidebar() {
-	const supabase = createClient();
+	const router = useRouter();
 	const pathname = usePathname();
 
 	const isActive = (path: string) => {
@@ -45,8 +45,13 @@ export function Sidebar() {
 	];
 
 	const signOut = async () => {
-		await supabase.auth.signOut();
-		redirect("/signin");
+		await authClient.signOut({
+			fetchOptions: {
+				onSuccess: () => {
+					router.push("/sign-in");
+				},
+			},
+		});
 	};
 
 	return (

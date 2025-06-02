@@ -1,103 +1,16 @@
-import { Badge } from "@/components/ui/badge";
-import {
-	Card,
-	CardContent,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
-import { createClient } from "@/lib/supabase/server";
-import type { Database } from "@/types/db";
-import { format } from "date-fns";
-import { LRUCache } from "lru-cache";
-import { BarChart, BookOpen, ClockIcon, Code, Users } from "lucide-react";
-import Link from "next/link";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { auth } from "@/lib/auth";
+import { BarChart, BookOpen, Code, Users } from "lucide-react";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-const cache = new LRUCache({
-	max: 1000 * 60 * 5, // 5 minutes
-});
-
 export default async function Dashboard() {
-	const supabase = await createClient();
-
-	const { data: session } = await supabase.auth.getUser();
+	const session = await auth.api.getSession({
+		headers: await headers(),
+	});
 
 	if (!session) {
-		redirect("/signin");
-	}
-
-	const cacheKey = "dashboard-stats";
-	let cached = cache.get(cacheKey) as {
-		user: Database["public"]["Tables"]["User"]["Row"];
-		totalInterviews: number;
-		technicalInterviews: number;
-		behavioralInterviews: number;
-		systemDesignInterviews: number;
-		recentInterviews: Database["public"]["Tables"]["Interview"]["Row"][];
-	};
-
-	if (!cached) {
-		console.log("Cache miss");
-
-		const { data: user } = await supabase
-			.from("User")
-			.select("*")
-			.eq("id", session?.user?.id)
-			.single();
-
-		if (!user) {
-			throw new Error("User not found");
-		}
-
-		const [
-			{ count: total },
-			{ count: technical },
-			{ count: behavioral },
-			{ count: systemDesign },
-			{ data: recent, error: recentError },
-		] = await Promise.all([
-			supabase
-				.from("interview")
-				.select("*", { count: "exact", head: true })
-				.eq("userId", user.id),
-
-			supabase
-				.from("interview")
-				.select("*", { count: "exact", head: true })
-				.eq("userId", user.id)
-				.eq("interviewType", "TECHNICAL"),
-
-			supabase
-				.from("interview")
-				.select("*", { count: "exact", head: true })
-				.eq("userId", user.id)
-				.eq("interviewType", "BEHAVIORAL"),
-
-			supabase
-				.from("interview")
-				.select("*", { count: "exact", head: true })
-				.eq("userId", user.id)
-				.eq("interviewType", "SYSTEM_DESIGN"),
-
-			supabase
-				.from("interview")
-				.select("*")
-				.eq("userId", user.id)
-				.order("createdAt", { ascending: false })
-				.limit(3),
-		]);
-
-		cached = {
-			user: user as Database["public"]["Tables"]["User"]["Row"],
-			totalInterviews: total ?? 0,
-			technicalInterviews: technical ?? 0,
-			behavioralInterviews: behavioral ?? 0,
-			systemDesignInterviews: systemDesign ?? 0,
-			recentInterviews: recent ?? [],
-		};
-
-		cache.set(cacheKey, cached);
+		redirect("/sign-in");
 	}
 
 	return (
@@ -111,7 +24,7 @@ export default async function Dashboard() {
 							<Cube />
 							<div>
 								<h1 className="text-3xl font-bold tracking-tight">
-									Welcome back, {cached.user?.name}!
+									Welcome back, {session.user?.name}!
 								</h1>
 								<p className="text-muted-foreground mt-2">
 									Continue your interview preparation journey.
@@ -129,11 +42,9 @@ export default async function Dashboard() {
 									<BookOpen className="h-4 w-4 text-muted-foreground" />
 								</CardHeader>
 								<CardContent>
-									<div className="text-2xl font-bold">
-										{cached.totalInterviews}
-									</div>
+									<div className="text-2xl font-bold">10</div>
 									<p className="text-xs text-muted-foreground">
-										+{cached.totalInterviews - 1} from last week
+										+10 from last week
 									</p>
 								</CardContent>
 							</Card>
@@ -145,9 +56,7 @@ export default async function Dashboard() {
 									<Code className="h-4 w-4 text-muted-foreground" />
 								</CardHeader>
 								<CardContent>
-									<div className="text-2xl font-bold">
-										{cached.technicalInterviews}
-									</div>
+									<div className="text-2xl font-bold">10</div>
 									<p className="text-xs text-muted-foreground">
 										Average score: 8.2/10
 									</p>
@@ -161,9 +70,7 @@ export default async function Dashboard() {
 									<Users className="h-4 w-4 text-muted-foreground" />
 								</CardHeader>
 								<CardContent>
-									<div className="text-2xl font-bold">
-										{cached.behavioralInterviews}
-									</div>
+									<div className="text-2xl font-bold">10</div>
 									<p className="text-xs text-muted-foreground">
 										Average score: 7.8/10
 									</p>
@@ -177,9 +84,7 @@ export default async function Dashboard() {
 									<BarChart className="h-4 w-4 text-muted-foreground" />
 								</CardHeader>
 								<CardContent>
-									<div className="text-2xl font-bold">
-										{cached.systemDesignInterviews}
-									</div>
+									<div className="text-2xl font-bold">10</div>
 									<p className="text-xs text-muted-foreground">
 										Average score: 7.5/10
 									</p>
@@ -188,7 +93,7 @@ export default async function Dashboard() {
 						</div>
 
 						{/* Recent Activity */}
-						<div>
+						{/* <div>
 							<h2 className="text-xl font-bold mb-4">Recent Activity</h2>
 							<Card>
 								<CardContent className="p-0">
@@ -234,7 +139,7 @@ export default async function Dashboard() {
 									</Link>
 								</CardFooter>
 							</Card>
-						</div>
+						</div> */}
 					</div>
 				</div>
 			</main>

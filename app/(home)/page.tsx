@@ -1,6 +1,7 @@
-import { createClient } from "@/lib/supabase/server";
 import PostHogClient from "../posthog";
 
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import CTA from "./components/cta";
 import FAQ from "./components/faq";
@@ -14,10 +15,9 @@ import Pricing from "./components/pricing";
 import Testimonial from "./components/testimonials";
 
 export default async function LandingPage() {
-	const supabase = await createClient();
-	const {
-		data: { session },
-	} = await supabase.auth.getSession();
+	const session = await auth.api.getSession({
+		headers: await headers(),
+	});
 
 	if (session) {
 		redirect("/home");

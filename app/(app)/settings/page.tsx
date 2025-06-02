@@ -1,24 +1,15 @@
 import { Button } from "@/components/ui/button";
-import { createClient } from "@/lib/supabase/server";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 export default async function Settings() {
-	const supabase = await createClient();
+	const session = await auth.api.getSession({
+		headers: await headers(),
+	});
 
-	const { data: user } = await supabase.auth.getUser();
-
-	if (!user) {
-		redirect("/signin");
-	}
-
-	const { data: userData } = await supabase
-		.from("User")
-		.select("*")
-		.eq("id", user?.user?.id)
-		.single();
-
-	if (!userData) {
-		redirect("/signin");
+	if (!session) {
+		redirect("/sign-in");
 	}
 
 	return (
@@ -46,7 +37,7 @@ export default async function Settings() {
 										id="name"
 										name="name"
 										type="text"
-										value={userData?.name ?? ""}
+										value={session.user?.name ?? ""}
 										readOnly={true}
 										autoComplete="given-name"
 										className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -65,7 +56,7 @@ export default async function Settings() {
 										id="email"
 										name="email"
 										type="email"
-										value={userData?.email ?? ""}
+										value={session.user?.email ?? ""}
 										readOnly={true}
 										autoComplete="email"
 										className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"

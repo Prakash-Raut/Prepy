@@ -1,7 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { createClient } from "@/lib/supabase/server";
-import type { Database } from "@/types/db";
+import { db } from "@/db";
+import { predefinedInterview } from "@/db/schema";
+import { auth } from "@/lib/auth";
 import { LRUCache } from "lru-cache";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import InterviewCard from "./interview-card";
 
@@ -21,33 +23,31 @@ const cache = new LRUCache({
 });
 
 export default async function InterviewListPage() {
-	const supabase = await createClient();
-
-	const { data: session } = await supabase.auth.getUser();
+	const session = await auth.api.getSession({
+		headers: await headers(),
+	});
 
 	if (!session) {
-		redirect("/signin");
+		redirect("/sign-in");
 	}
 
 	const cacheKey = "predefined-interviews";
 
 	let cached = cache.get(
 		cacheKey,
-	) as Database["public"]["Tables"]["PredefinedInterview"]["Row"][];
+	) as (typeof predefinedInterview.$inferSelect)[];
 
 	if (!cached) {
 		console.log("Cache miss");
 
-		const { data: predefinedInterviews } = await supabase
-			.from("PredefinedInterview")
-			.select("*");
+		const data = await db.select().from(predefinedInterview);
 
-		if (!predefinedInterviews) {
+		if (!data) {
 			throw new Error("No predefined interviews found");
 		}
 
-		cached = predefinedInterviews;
-		cache.set(cacheKey, predefinedInterviews);
+		cached = data;
+		cache.set(cacheKey, data);
 	}
 
 	return (
