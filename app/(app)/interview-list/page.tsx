@@ -1,11 +1,9 @@
+import InterviewCard from "@/components/interview-card";
 import { Button } from "@/components/ui/button";
-import { db } from "@/db";
-import { predefinedInterview } from "@/db/schema";
 import { auth } from "@/lib/auth";
-import { LRUCache } from "lru-cache";
+import type { Interview } from "@/types";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import InterviewCard from "./interview-card";
 
 const categories = [
 	{ id: "software", name: "Software", icon: "🔧" },
@@ -18,9 +16,29 @@ const categories = [
 	{ id: "marketing", name: "Marketing", icon: "📣" },
 ];
 
-const cache = new LRUCache({
-	max: 1000 * 60 * 5, // 5 minutes
-});
+const interviews: Interview[] = [
+	{
+		id: "1",
+		title: "Software Engineer",
+		description: "Software Engineer",
+		difficulty: "easy",
+		duration: 30,
+	},
+	{
+		id: "2",
+		title: "Data Scientist",
+		description: "Data Scientist",
+		difficulty: "medium",
+		duration: 45,
+	},
+	{
+		id: "3",
+		title: "Product Manager",
+		description: "Product Manager",
+		difficulty: "hard",
+		duration: 60,
+	},
+];
 
 export default async function InterviewListPage() {
 	const session = await auth.api.getSession({
@@ -29,25 +47,6 @@ export default async function InterviewListPage() {
 
 	if (!session) {
 		redirect("/sign-in");
-	}
-
-	const cacheKey = "predefined-interviews";
-
-	let cached = cache.get(
-		cacheKey,
-	) as (typeof predefinedInterview.$inferSelect)[];
-
-	if (!cached) {
-		console.log("Cache miss");
-
-		const data = await db.select().from(predefinedInterview);
-
-		if (!data) {
-			throw new Error("No predefined interviews found");
-		}
-
-		cached = data;
-		cache.set(cacheKey, data);
 	}
 
 	return (
@@ -81,7 +80,7 @@ export default async function InterviewListPage() {
 			{/* Interview Cards */}
 			<div className="container py-8">
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-					{cached.map((interview) => (
+					{interviews.map((interview) => (
 						<InterviewCard key={interview.id} interview={interview} />
 					))}
 				</div>

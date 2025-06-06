@@ -1,10 +1,8 @@
 import { Badge } from "@/components/ui/badge";
-import type { predefinedInterview } from "@/db/schema";
 import { cn } from "@/lib/utils";
+import type { Interview } from "@/types";
 import { Clock } from "lucide-react";
 import Link from "next/link";
-
-type PredefinedInterview = typeof predefinedInterview.$inferSelect;
 
 const bgMap = {
 	easy: "bg-sky-100",
@@ -18,7 +16,7 @@ const difficultyMap = {
 	hard: "bg-red-500 hover:bg-red-600",
 };
 
-const InterviewCard = ({ interview }: { interview: PredefinedInterview }) => {
+const InterviewCard = ({ interview }: { interview: Interview }) => {
 	return (
 		<Link
 			href={`/practice-interview/${interview.id}`}

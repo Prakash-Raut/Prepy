@@ -115,11 +115,11 @@ export function SignInForm({
 			<Card className="overflow-hidden py-0">
 				<CardContent className="grid p-0 md:grid-cols-2">
 					<Form {...form}>
-						<form
-							className="p-6 md:p-8"
-							onSubmit={form.handleSubmit(submitAction)}
-						>
-							<div className="flex flex-col gap-6">
+						<div className="p-6 md:p-8">
+							<form
+								onSubmit={form.handleSubmit(submitAction)}
+								className="flex flex-col gap-6"
+							>
 								<div className="flex flex-col items-center text-center">
 									<h1 className="text-2xl font-bold">Welcome back</h1>
 									<p className="text-balance text-muted-foreground">
@@ -177,6 +177,8 @@ export function SignInForm({
 								<Button disabled={isPending} type="submit" className="w-full">
 									Sign in
 								</Button>
+							</form>
+							<div className="flex flex-col gap-6 mt-6">
 								<div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
 									<span className="relative z-10 bg-background px-2 text-muted-foreground">
 										Or continue with
@@ -210,7 +212,7 @@ export function SignInForm({
 									</Link>
 								</div>
 							</div>
-						</form>
+						</div>
 					</Form>
 					<div className="bg-radial from-sidebar-accent to-sidebar relative hidden md:flex flex-col gap-y-4 items-center justify-center">
 						<Image
