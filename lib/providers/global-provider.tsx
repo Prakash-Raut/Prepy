@@ -1,7 +1,9 @@
 import type { ChildrenProps } from "@/types";
+import { NuqsAdapter } from "nuqs/adapters/next";
 import { DeepgramContextProvider } from "./deepgram-provider";
 import { MicrophoneContextProvider } from "./microphone-provider";
 import { PostHogProvider } from "./posthog-provider";
+import { QueryProvider } from "./query-provider";
 import { ThemeProvider } from "./theme-provider";
 
 const GlobalProvider = ({ children }: ChildrenProps) => {
@@ -12,11 +14,15 @@ const GlobalProvider = ({ children }: ChildrenProps) => {
 			forcedTheme="light"
 			disableTransitionOnChange
 		>
-			<PostHogProvider>
-				<MicrophoneContextProvider>
-					<DeepgramContextProvider>{children}</DeepgramContextProvider>
-				</MicrophoneContextProvider>
-			</PostHogProvider>
+			<NuqsAdapter>
+				<QueryProvider>
+					<PostHogProvider>
+						<MicrophoneContextProvider>
+							<DeepgramContextProvider>{children}</DeepgramContextProvider>
+						</MicrophoneContextProvider>
+					</PostHogProvider>
+				</QueryProvider>
+			</NuqsAdapter>
 		</ThemeProvider>
 	);
 };
