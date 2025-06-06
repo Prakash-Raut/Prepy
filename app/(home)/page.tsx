@@ -12,6 +12,7 @@ import HowItWorks from "./components/how-it-works";
 import FloatingCompanyLogos from "./components/logos";
 import Navbar from "./components/navbar/navbar";
 import Pricing from "./components/pricing";
+import ScrollToTop from "./components/scroll-to-top";
 import Testimonial from "./components/testimonials";
 
 export default async function LandingPage() {
@@ -67,6 +68,7 @@ export default async function LandingPage() {
 			</section>
 
 			<Footer />
+			<ScrollToTop />
 		</div>
 	);
 }
