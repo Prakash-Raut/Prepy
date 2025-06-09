@@ -82,17 +82,35 @@ export const interviewStatus = pgEnum("meeting_status", [
 	"cancelled",
 ]);
 
+export const interviewDifficulty = pgEnum("interview_difficulty", [
+	"easy",
+	"medium",
+	"hard",
+]);
+
+export const interviewDuration = pgEnum("interview_duration", [
+	"15",
+	"30",
+	"45",
+	"60",
+]);
+
 export const interviews = pgTable("interviews", {
 	id: text("id")
 		.primaryKey()
 		.$defaultFn(() => nanoid()),
 	name: text("name").notNull(),
+	description: text("description").notNull().default("No description"),
 	userId: text("user_id")
 		.notNull()
 		.references(() => user.id, { onDelete: "cascade" }),
 	agentId: text("agent_id")
 		.notNull()
 		.references(() => agents.id, { onDelete: "cascade" }),
+	difficulty: interviewDifficulty("difficulty").notNull().default("medium"),
+	durationInMinutes: interviewDuration("duration_in_minutes")
+		.notNull()
+		.default("15"),
 	status: interviewStatus("status").notNull().default("upcoming"),
 	startedAt: timestamp("started_at"),
 	endedAt: timestamp("ended_at"),

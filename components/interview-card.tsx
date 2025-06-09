@@ -1,8 +1,14 @@
+"use client";
+
+import { createInterview } from "@/actions/interview";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import type { Interview } from "@/types";
+import { useMutation } from "@tanstack/react-query";
 import { Clock } from "lucide-react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { GeneratedAvatar } from "./generated-avatar";
 
 const bgMap = {
 	easy: "bg-sky-100",
@@ -16,36 +22,73 @@ const difficultyMap = {
 	hard: "bg-red-500 hover:bg-red-600",
 };
 
-const InterviewCard = ({ interview }: { interview: Interview }) => {
+interface Props {
+	interview: Interview;
+	userId: string;
+}
+
+export const InterviewCard = ({ interview, userId }: Props) => {
+	const router = useRouter();
+
+	const createMeeting = useMutation({
+		mutationKey: ["interview", "create"],
+		mutationFn: () =>
+			createInterview(
+				{
+					name: interview.name,
+					agentId: interview.agentId,
+				},
+				userId,
+			),
+		onSuccess: async () => {
+			router.push(`/interview/${interview.id}`);
+		},
+		onError: (error) => {
+			toast.error(error.message);
+		},
+	});
+
+	const handleCreateInterview = () => {
+		createMeeting.mutate();
+	};
+
 	return (
-		<Link
-			href={`/practice-interview/${interview.id}`}
-			key={interview.id}
-			className="block"
+		<div
+			className="block cursor-pointer"
+			onClick={handleCreateInterview}
+			onKeyDown={(e) => {
+				if (e.key === "Enter" || e.key === " ") {
+					handleCreateInterview();
+				}
+			}}
 		>
 			<div className="rounded-xl overflow-hidden h-full flex flex-col">
 				<div
 					className={cn(
 						"p-8 flex items-center justify-center",
-						bgMap[interview.difficulty],
+						bgMap[interview.difficulty as keyof typeof bgMap],
 					)}
 				>
-					<div className="h-16 w-16 rounded-full flex items-center justify-center shadow-md">
-						<span className="text-indigo-500 font-bold text-2xl">P</span>
-					</div>
+					<GeneratedAvatar
+						seed={interview.name}
+						variant="initials"
+						className="h-16 w-16"
+					/>
 				</div>
 				<div className="p-4 border border-t-0 rounded-b-xl flex-1 flex flex-col">
-					<h3 className="font-bold text-lg">{interview.title}</h3>
+					<h3 className="font-bold text-lg">{interview.name}</h3>
 					<p className="text-sm">{interview.description}</p>
 					<div className="mt-auto pt-4 flex items-center gap-4">
 						<div className="flex items-center gap-1">
 							<Clock className="h-4 w-4" />
-							<span className="text-sm">{interview.duration}m</span>
+							<span className="text-sm">{interview.durationInMinutes}m</span>
 						</div>
 						<Badge
 							className={cn(
 								"text-sm text-white capitalize",
-								difficultyMap[interview.difficulty],
+								difficultyMap[
+									interview.difficulty as keyof typeof difficultyMap
+								],
 							)}
 						>
 							{interview.difficulty}
@@ -53,8 +96,6 @@ const InterviewCard = ({ interview }: { interview: Interview }) => {
 					</div>
 				</div>
 			</div>
-		</Link>
+		</div>
 	);
 };
-
-export default InterviewCard;

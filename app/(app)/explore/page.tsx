@@ -1,7 +1,7 @@
-import InterviewCard from "@/components/interview-card";
+import { getAllInterview } from "@/actions/interview";
+import { InterviewCard } from "@/components/interview-card";
 import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
-import type { Interview } from "@/types";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -16,30 +16,6 @@ const categories = [
 	{ id: "marketing", name: "Marketing", icon: "📣" },
 ];
 
-const interviews: Interview[] = [
-	{
-		id: "1",
-		title: "Software Engineer",
-		description: "Software Engineer",
-		difficulty: "easy",
-		duration: 30,
-	},
-	{
-		id: "2",
-		title: "Data Scientist",
-		description: "Data Scientist",
-		difficulty: "medium",
-		duration: 45,
-	},
-	{
-		id: "3",
-		title: "Product Manager",
-		description: "Product Manager",
-		difficulty: "hard",
-		duration: 60,
-	},
-];
-
 export default async function InterviewListPage() {
 	const session = await auth.api.getSession({
 		headers: await headers(),
@@ -48,6 +24,13 @@ export default async function InterviewListPage() {
 	if (!session) {
 		redirect("/sign-in");
 	}
+	const { items } = await getAllInterview(
+		{
+			page: "1",
+			pageSize: "10",
+		},
+		session.user.id,
+	);
 
 	return (
 		<div className="min-h-screen px-24">
@@ -80,8 +63,12 @@ export default async function InterviewListPage() {
 			{/* Interview Cards */}
 			<div className="container py-8">
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-					{interviews.map((interview) => (
-						<InterviewCard key={interview.id} interview={interview} />
+					{items.map((interview) => (
+						<InterviewCard
+							key={interview.id}
+							interview={interview}
+							userId={session.user.id}
+						/>
 					))}
 				</div>
 			</div>
