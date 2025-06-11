@@ -1,4 +1,5 @@
 import { getAllInterview } from "@/actions/interview";
+import PostHogClient from "@/app/posthog";
 import { InterviewCard } from "@/components/interview-card";
 import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
@@ -24,6 +25,14 @@ export default async function InterviewListPage() {
 	if (!session) {
 		redirect("/sign-in");
 	}
+
+	const posthog = PostHogClient();
+
+	posthog.capture({
+		distinctId: session.user.id,
+		event: "explore_page_viewed",
+	});
+
 	const { items } = await getAllInterview(
 		{
 			page: "1",
@@ -64,11 +73,7 @@ export default async function InterviewListPage() {
 			<div className="container py-8">
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 					{items.map((interview) => (
-						<InterviewCard
-							key={interview.id}
-							interview={interview}
-							userId={session.user.id}
-						/>
+						<InterviewCard key={interview.id} interview={interview} />
 					))}
 				</div>
 			</div>

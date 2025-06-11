@@ -1,11 +1,27 @@
 "use server";
 
 import { db } from "@/db";
-import { agents, interviews } from "@/db/schema";
+import { agents, interviews, user } from "@/db/schema";
 import { generateAvatarUri } from "@/lib/avatar";
+import { streamChat } from "@/lib/stream-chat";
 import { streamVideo } from "@/lib/stream-video";
-import { type Interview, InterviewStatus } from "@/types";
-import { and, count, desc, eq, getTableColumns, ilike, sql } from "drizzle-orm";
+import {
+	type Interview,
+	InterviewStatus,
+	type InterviewWithAgent,
+	type StreamTranscriptItem,
+} from "@/types";
+import {
+	and,
+	count,
+	desc,
+	eq,
+	getTableColumns,
+	ilike,
+	inArray,
+	sql,
+} from "drizzle-orm";
+import JSONL from "jsonl-parse-stringify";
 import { z } from "zod";
 import {
 	DEFAULT_PAGE,
@@ -78,15 +94,6 @@ export const createInterview = async (
 				variant: "botttsNeutral",
 			}),
 		},
-		{
-			id: userId,
-			name: "Prakash Raut",
-			role: "admin",
-			image: generateAvatarUri({
-				seed: userId,
-				variant: "initials",
-			}),
-		},
 	]);
 
 	return createdInterview;
@@ -126,7 +133,7 @@ export const updatedInterview = async (
 export const getInterview = async (
 	interviewId: string,
 	userId: string,
-): Promise<Interview> => {
+): Promise<InterviewWithAgent> => {
 	const [existingInterview] = await db
 		.select({
 			...getTableColumns(interviews),
@@ -176,7 +183,7 @@ export const getAllInterview = async (
 	query: Record<string, string>,
 	userId: string,
 ): Promise<{
-	items: Interview[];
+	items: InterviewWithAgent[];
 	total: number;
 	totalPages: number;
 }> => {
@@ -191,19 +198,18 @@ export const getAllInterview = async (
 	const data = await db
 		.select({
 			...getTableColumns(interviews),
-			// agent: agents,
+			agent: agents,
 			duration: sql<number>`EXTRACT(EPOCH FROM (ended_at - started_at))`.as(
 				"duration",
 			),
 		})
 		.from(interviews)
-		// .innerJoin(agents, eq(interviews.agentId, agents.id))
+		.innerJoin(agents, eq(interviews.agentId, agents.id))
 		.where(
 			and(
 				eq(interviews.userId, userId),
 				search ? ilike(interviews.name, `%${search}%`) : undefined,
 				status ? eq(interviews.status, status) : undefined,
-				// agentId ? eq(interviews.agentId, agentId) : undefined,
 			),
 		)
 		.orderBy(desc(interviews.createdAt), desc(interviews.id))
@@ -213,13 +219,12 @@ export const getAllInterview = async (
 	const [total] = await db
 		.select({ count: count() })
 		.from(interviews)
-		// .innerJoin(agents, eq(interviews.agentId, agents.id))
+		.innerJoin(agents, eq(interviews.agentId, agents.id))
 		.where(
 			and(
 				eq(interviews.userId, userId),
 				search ? ilike(interviews.name, `%${search}%`) : undefined,
 				status ? eq(interviews.status, status) : undefined,
-				// agentId ? eq(interviews.agentId, agentId) : undefined,
 			),
 		);
 
@@ -246,10 +251,107 @@ export const deleteInterview = async (interviewId: string, userId: string) => {
 };
 
 export const generateStreamToken = async (userId: string): Promise<string> => {
+	const nowInSeconds = Math.floor(Date.now() / 1000);
+	const validity = 60 * 60; // 1 hour
+
 	const token = streamVideo.generateUserToken({
 		user_id: userId,
-		validity_in_seconds: 3600,
+		validity_in_seconds: validity,
+		issued_at: nowInSeconds,
+		exp: nowInSeconds + validity,
 	});
 
+	return token;
+};
+
+export const getTranscript = async (interviewId: string, userId: string) => {
+	const [existingInterview] = await db
+		.select()
+		.from(interviews)
+		.where(and(eq(interviews.id, interviewId), eq(interviews.userId, userId)));
+
+	if (!existingInterview) {
+		throw new Error("Interview not found");
+	}
+
+	if (!existingInterview.transcriptUrl) {
+		return [];
+	}
+
+	const transcript = await fetch(existingInterview.transcriptUrl)
+		.then((res) => res.text())
+		.then((text) => JSONL.parse<StreamTranscriptItem>(text))
+		.catch(() => []);
+
+	const speakerIds = [...new Set(transcript.map((item) => item.speaker_id))];
+
+	const userSpeakers = await db
+		.select()
+		.from(user)
+		.where(inArray(user.id, speakerIds))
+		.then((users) =>
+			users.map((user) => ({
+				...user,
+				image:
+					user.image ??
+					generateAvatarUri({
+						seed: user.name,
+						variant: "initials",
+					}),
+			})),
+		);
+
+	const agentSpeakers = await db
+		.select()
+		.from(agents)
+		.where(inArray(agents.id, speakerIds))
+		.then((agents) =>
+			agents.map((agent) => ({
+				...agent,
+				image: generateAvatarUri({
+					seed: agent.name,
+					variant: "botttsNeutral",
+				}),
+			})),
+		);
+
+	const speakers = [...userSpeakers, ...agentSpeakers];
+
+	const transcriptWithSpeakers = transcript.map((item) => {
+		const speaker = speakers.find((speaker) => speaker.id === item.speaker_id);
+
+		if (!speaker) {
+			return {
+				...item,
+				user: {
+					name: "Unknown",
+					image: generateAvatarUri({
+						seed: "Unknown",
+						variant: "initials",
+					}),
+				},
+			};
+		}
+
+		return {
+			...item,
+			user: {
+				name: speaker.name,
+				image: speaker.image,
+			},
+		};
+	});
+
+	return transcriptWithSpeakers;
+};
+
+export const generateChatToken = async (userId: string) => {
+	const token = streamChat.createToken(userId);
+	await streamChat.upsertUsers([
+		{
+			id: userId,
+			role: "admin",
+		},
+	]);
 	return token;
 };

@@ -2,6 +2,7 @@
 
 import { generateStreamToken } from "@/actions/interview";
 import { Config } from "@/config/env";
+import { generateAvatarUri } from "@/lib/avatar";
 import {
 	type Call,
 	CallingState,
@@ -9,7 +10,6 @@ import {
 	StreamVideo,
 	StreamVideoClient,
 } from "@stream-io/video-react-sdk";
-import { useMutation } from "@tanstack/react-query";
 import { LoaderIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { InterviewUI } from "./interview-ui";
@@ -29,55 +29,61 @@ export const InterviewConnect = ({
 	userName,
 	userImage,
 }: Props) => {
-	const { mutateAsync: generateToken } = useMutation({
-		mutationKey: ["interview", interviewId, "token"],
-		mutationFn: () => generateStreamToken(userId),
-	});
-
-	const [client, setClient] = useState<StreamVideoClient>();
+	const [videoClient, setVideoClient] = useState<StreamVideoClient>();
+	const [videoCall, setVideoCall] = useState<Call>();
 
 	useEffect(() => {
-		const _client = new StreamVideoClient({
+		const tokenProvider = () => Promise.resolve(generateStreamToken(userId));
+
+		const client = StreamVideoClient.getOrCreateInstance({
 			apiKey: Config.NEXT_PUBLIC_STREAM_VIDEO_API_KEY,
 			user: {
 				id: userId,
 				name: userName,
 				image: userImage,
 			},
-			tokenProvider: generateToken,
+			tokenProvider,
 		});
 
-		console.log("STREAM CLIENT", _client);
+		client.connectUser(
+			{
+				id: userId,
+				name: userName,
+				image: generateAvatarUri({
+					seed: userName,
+					variant: "initials",
+				}),
+			},
+			tokenProvider,
+		);
 
-		setClient(_client);
+		setVideoClient(client);
 
 		return () => {
-			_client.disconnectUser();
-			setClient(undefined);
+			client.disconnectUser();
+			setVideoClient(undefined);
 		};
-	}, [userId, userName, userImage, generateToken]);
-
-	const [call, setCall] = useState<Call>();
+	}, [userId, userName, userImage]);
 
 	useEffect(() => {
-		if (!client) return;
+		if (!videoClient) return;
 
-		const _call = client.call("default", interviewId);
-		_call.camera.disable();
-		_call.microphone.disable();
+		const call = videoClient.call("default", interviewId);
+		call.camera.disable();
+		call.microphone.disable();
 
-		setCall(_call);
+		setVideoCall(call);
 
 		return () => {
-			if (_call.state.callingState !== CallingState.LEFT) {
-				_call.leave();
-				_call.endCall();
-				setCall(undefined);
+			if (call.state.callingState !== CallingState.LEFT) {
+				call.leave();
+				call.endCall();
+				setVideoCall(undefined);
 			}
 		};
-	}, [client, interviewId]);
+	}, [videoClient, interviewId]);
 
-	if (!client || !call) {
+	if (!videoClient || !videoCall) {
 		return (
 			<div className="flex h-screen items-center justify-center bg-radial from-sidebar-accent to-sidebar">
 				<LoaderIcon className="size-6 animate-spin text-white" />
@@ -86,8 +92,8 @@ export const InterviewConnect = ({
 	}
 
 	return (
-		<StreamVideo client={client}>
-			<StreamCall call={call}>
+		<StreamVideo client={videoClient}>
+			<StreamCall call={videoCall}>
 				<InterviewUI interviewName={interviewName} />
 			</StreamCall>
 		</StreamVideo>

@@ -1,3 +1,4 @@
+import PostHogClient from "@/app/posthog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { auth } from "@/lib/auth";
 import { BarChart, BookOpen, Code, Users } from "lucide-react";
@@ -12,6 +13,13 @@ export default async function Dashboard() {
 	if (!session) {
 		redirect("/sign-in");
 	}
+
+	const posthog = PostHogClient();
+
+	posthog.capture({
+		distinctId: session.user.id,
+		event: "home_page_viewed",
+	});
 
 	return (
 		<div className="flex min-h-screen flex-col px-24">

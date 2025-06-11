@@ -11,18 +11,24 @@ interface Props {
 
 export const InterviewActive = ({ onLeave, interviewName }: Props) => {
 	return (
-		<div className="flex flex-col justify-between p-4 h-full text-white">
+		<div className="flex flex-col justify-between p-4 text-white bg-black h-screen">
 			<div className=" bg-[#101213] rounded-full p-4 flex items-center gap-4">
 				<Link
 					href="/"
 					className="flex items-center justify-center p-1 bg-white/10 rounded-full w-fit"
 				>
-					<Image src="/logo.svg" alt="logo" width={22} height={22} />
+					<Image
+						src="/interview.svg"
+						alt="logo"
+						width={22}
+						height={22}
+						priority
+					/>
 				</Link>
 				<h4 className="text-base">{interviewName}</h4>
 			</div>
 			<SpeakerLayout />
-			<div className="bg-[#101213] rounded-full px-4 py-2 flex items-center gap-x-2">
+			<div className="bg-[#101213] rounded-full px-4 py-2 flex items-center justify-center gap-x-2">
 				<CallControls onLeave={onLeave} />
 			</div>
 		</div>

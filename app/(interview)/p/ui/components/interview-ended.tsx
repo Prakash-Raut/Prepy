@@ -13,7 +13,7 @@ export const InterviewEnded = () => {
 						<p className="text-sm">Summary will appear in few minutes</p>
 					</div>
 					<Button asChild>
-						<Link href="/interviews">Back to interviews</Link>
+						<Link href="/explore">Back to interviews</Link>
 					</Button>
 				</div>
 			</div>

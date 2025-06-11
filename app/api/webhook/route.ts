@@ -4,17 +4,26 @@ import { Config } from "@/config/env";
 import { db } from "@/db";
 import { agents, interviews } from "@/db/schema";
 import { inngest } from "@/inngest/client";
+import { generateAvatarUri } from "@/lib/avatar";
+import { streamChat } from "@/lib/stream-chat";
 import { streamVideo } from "@/lib/stream-video";
 import type {
 	CallRecordingReadyEvent,
 	CallSessionEndedEvent,
 	CallTranscriptionReadyEvent,
+	MessageNewEvent,
 } from "@stream-io/node-sdk";
 import type {
 	CallSessionParticipantLeftEvent,
 	CallSessionStartedEvent,
 } from "@stream-io/video-react-sdk";
 import { and, eq, not } from "drizzle-orm";
+import OpenAI from "openai";
+import type { ChatCompletionMessageParam } from "openai/resources/index.mjs";
+
+const openaiClient = new OpenAI({
+	apiKey: Config.OPENAI_API_KEY,
+});
 
 function verifySignatureWithSDK(body: string, signature: string): boolean {
 	return streamVideo.verifyWebhook(body, signature);
@@ -161,6 +170,110 @@ async function handleRecordingReady(event: CallRecordingReadyEvent) {
 	return NextResponse.json({ message: "Recording ready" }, { status: 200 });
 }
 
+async function handleNewMessage(event: MessageNewEvent) {
+	const userId = event.user?.id;
+	const channelId = event.channel_id;
+	const text = event.message?.text;
+
+	if (!userId || !channelId || !text) {
+		return NextResponse.json(
+			{ error: "Missing required fields" },
+			{ status: 400 },
+		);
+	}
+
+	const [existingInterview] = await db
+		.select()
+		.from(interviews)
+		.where(
+			and(eq(interviews.id, channelId), eq(interviews.status, "completed")),
+		);
+
+	if (!existingInterview) {
+		return NextResponse.json({ error: "Interview not found" }, { status: 400 });
+	}
+
+	const [existingAgent] = await db
+		.select()
+		.from(agents)
+		.where(eq(agents.id, existingInterview.agentId));
+
+	if (!existingAgent) {
+		return NextResponse.json({ error: "Agent not found" }, { status: 400 });
+	}
+
+	if (userId !== existingAgent.id) {
+		const instructions = `
+      You are an AI assistant helping the user revisit a recently completed interview.
+      Below is a summary of the interview, generated from the transcript:
+      
+      ${existingInterview.summary}
+      
+      The following are your original instructions from the live interview assistant. Please continue to follow these behavioral guidelines as you assist the user:
+      
+      ${existingAgent.instructions}
+      
+      The user may ask questions about the interview, request clarifications, or ask for follow-up actions.
+      Always base your responses on the interview summary above.
+      
+      You also have access to the recent conversation history between you and the user. Use the context of previous messages to provide relevant, coherent, and helpful responses. If the user's question refers to something discussed earlier, make sure to take that into account and maintain continuity in the conversation.
+      
+      If the summary does not contain enough information to answer a question, politely let the user know.
+      
+      Be concise, helpful, and focus on providing accurate information from the interview and the ongoing conversation.
+      `;
+
+		const channel = streamChat.channel("messaging", channelId);
+		await channel.watch();
+
+		const previousFiveMessages = channel.state.messages
+			.slice(-5)
+			.filter((msg) => msg.text && msg.text.trim() !== "")
+			.map<ChatCompletionMessageParam>((message) => ({
+				role: message.user?.id === existingAgent.id ? "assistant" : "user",
+				content: message.text || "",
+			}));
+
+		const GPTResponse = await openaiClient.chat.completions.create({
+			model: "gpt-4o-mini",
+			messages: [
+				{ role: "system", content: instructions },
+				...previousFiveMessages,
+				{ role: "user", content: text },
+			],
+		});
+
+		const GPTResponseText = GPTResponse.choices[0].message.content;
+
+		if (!GPTResponseText) {
+			return NextResponse.json(
+				{ error: "No response from GPT" },
+				{ status: 400 },
+			);
+		}
+
+		const avatarUrl = generateAvatarUri({
+			seed: existingAgent.name,
+			variant: "botttsNeutral",
+		});
+
+		await streamChat.upsertUser({
+			id: existingAgent.id,
+			name: existingAgent.name,
+			image: avatarUrl,
+		});
+
+		await channel.sendMessage({
+			text: GPTResponseText,
+			user: {
+				id: existingAgent.id,
+				name: existingAgent.name,
+				image: avatarUrl,
+			},
+		});
+	}
+}
+
 export async function POST(req: NextRequest) {
 	const signature = req.headers.get("x-signature");
 	const apiKey = req.headers.get("x-api-key");
@@ -186,9 +299,9 @@ export async function POST(req: NextRequest) {
 		return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
 	}
 
-	const eventType = payload as Record<string, unknown>;
+	const eventType = (payload as Record<string, unknown>)?.type;
 
-	switch (eventType.type) {
+	switch (eventType) {
 		case "call.session_started":
 			return handleSessionStarted(payload as CallSessionStartedEvent);
 		case "call.session_participant_left":
@@ -199,8 +312,10 @@ export async function POST(req: NextRequest) {
 			return handleTranscriptionReady(payload as CallTranscriptionReadyEvent);
 		case "call.recording_ready":
 			return handleRecordingReady(payload as CallRecordingReadyEvent);
+		case "message.new":
+			return handleNewMessage(payload as MessageNewEvent);
 		default:
-			console.log("Ignoring unsupported event type:", eventType.type);
+			console.log("Ignoring unsupported event type:", eventType);
 			return NextResponse.json({ message: "Event ignored" }, { status: 200 });
 	}
 }

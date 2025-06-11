@@ -221,6 +221,7 @@ export function SignInForm({
 							className=""
 							width={92}
 							height={92}
+							priority
 						/>
 						<p className="text-2xl font-semibold text-white">Prepy AI</p>
 					</div>

@@ -36,7 +36,7 @@ export function Sidebar() {
 		},
 		{
 			name: "Interviews",
-			href: "/interviews",
+			href: "/interview",
 			icon: Video,
 		},
 		{

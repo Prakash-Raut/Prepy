@@ -1,4 +1,5 @@
 import { getInterview } from "@/actions/interview";
+import PostHogClient from "@/app/posthog";
 import { auth } from "@/lib/auth";
 import { getQueryClient } from "@/lib/query-client";
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
@@ -19,6 +20,13 @@ const Page = async ({ params }: Props) => {
 	if (!session) {
 		redirect("/sign-in");
 	}
+
+	const posthog = PostHogClient();
+
+	posthog.capture({
+		distinctId: session.user.id,
+		event: "interview_practice_page_viewed",
+	});
 
 	const queryClient = await getQueryClient();
 

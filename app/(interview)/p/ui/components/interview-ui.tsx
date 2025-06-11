@@ -13,20 +13,11 @@ interface Props {
 export const InterviewUI = ({ interviewName }: Props) => {
 	const call = useCall();
 	const [show, setShow] = useState<"lobby" | "call" | "ended">("lobby");
-	const [isJoined, setIsJoined] = useState(false);
 
 	const handleJoin = async () => {
-		if (!call || isJoined) return;
-
-		try {
-			setIsJoined(true);
-			await call.join();
-			setShow("call");
-		} catch (err) {
-			console.error("Failed to join the call:", err);
-		} finally {
-			setIsJoined(false);
-		}
+		if (!call) return;
+		await call.join();
+		setShow("call");
 	};
 
 	const handleLeave = async () => {
@@ -37,9 +28,7 @@ export const InterviewUI = ({ interviewName }: Props) => {
 
 	return (
 		<StreamTheme className="h-full">
-			{show === "lobby" && (
-				<InterviewLobby onJoin={handleJoin} joined={isJoined} />
-			)}
+			{show === "lobby" && <InterviewLobby onJoin={handleJoin} />}
 			{show === "call" && (
 				<InterviewActive onLeave={handleLeave} interviewName={interviewName} />
 			)}

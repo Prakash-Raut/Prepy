@@ -12,12 +12,11 @@ import {
 	useCallStateHooks,
 } from "@stream-io/video-react-sdk";
 import "@stream-io/video-react-sdk/dist/css/styles.css";
-import { Loader, LogInIcon } from "lucide-react";
+import { LogInIcon } from "lucide-react";
 import Link from "next/link";
 
 interface Props {
 	onJoin: () => void;
-	joined?: boolean;
 }
 
 const DisabledVideoPreview = () => {
@@ -48,7 +47,7 @@ const AllowBrowserPermissions = () => {
 	);
 };
 
-export const InterviewLobby = ({ onJoin, joined }: Props) => {
+export const InterviewLobby = ({ onJoin }: Props) => {
 	const { useCameraState, useMicrophoneState } = useCallStateHooks();
 
 	const { hasBrowserPermission: hasMicPermission } = useMicrophoneState();
@@ -79,18 +78,9 @@ export const InterviewLobby = ({ onJoin, joined }: Props) => {
 						<Button asChild variant="ghost">
 							<Link href="/meetings">Cancel</Link>
 						</Button>
-						<Button type="button" onClick={onJoin} disabled={joined}>
-							{joined ? (
-								<>
-									<Loader className="animate-spin" />
-									Joining...
-								</>
-							) : (
-								<>
-									<LogInIcon />
-									Join Interview
-								</>
-							)}
+						<Button type="button" onClick={onJoin}>
+							<LogInIcon />
+							Join Interview
 						</Button>
 					</div>
 				</div>

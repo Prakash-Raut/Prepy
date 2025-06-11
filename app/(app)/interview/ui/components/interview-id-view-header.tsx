@@ -43,7 +43,7 @@ export const InterviewIdViewHeader = ({
 				<BreadcrumbList>
 					<BreadcrumbItem>
 						<BreadcrumbLink asChild className="font-medium text-xl">
-							<Link href="/meetings">My Meetings</Link>
+							<Link href="/interview">My Interviews</Link>
 						</BreadcrumbLink>
 					</BreadcrumbItem>
 					<BreadcrumbSeparator className="text-foreground text-xl font-medium [&>svg]:size-4">

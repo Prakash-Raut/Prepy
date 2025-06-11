@@ -4,17 +4,15 @@ import { deleteInterview, getInterview } from "@/actions/interview";
 import { ErrorState } from "@/components/error-state";
 import { LoadingState } from "@/components/loading-state";
 import { useConfirm } from "@/hooks/use-confirm";
-import {
-	useMutation,
-	useQueryClient,
-	useSuspenseQuery,
-} from "@tanstack/react-query";
+// import { CompletedState } from "../components/completed-state";
+import type { InterviewWithAgent } from "@/types";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ActiveState } from "../components/active-state";
 import { CancelledState } from "../components/cancelled-state";
-// import { CompletedState } from "../components/completed-state";
+import { CompletedState } from "../components/completed-state";
 import { InterviewIdViewHeader } from "../components/interview-id-view-header";
 import { ProcessingState } from "../components/processing-state";
 import { UpcomingState } from "../components/upcoming-state";
@@ -31,9 +29,13 @@ export function InterviewIdView({ interviewId, userId }: Props) {
 	const [updateinterviewDialogOpen, setUpdateinterviewDialogOpen] =
 		useState(false);
 
-	const { data } = useSuspenseQuery({
+	const { data, isLoading, error } = useQuery<InterviewWithAgent>({
 		queryKey: ["interview", interviewId],
 		queryFn: () => getInterview(interviewId, userId),
+		initialData: () =>
+			queryClient.getQueryData<InterviewWithAgent>(["interview", interviewId]),
+		staleTime: 5 * 60 * 1000, // 5 minutes
+		refetchOnWindowFocus: false,
 	});
 
 	const removeInterview = useMutation({
@@ -61,6 +63,11 @@ export function InterviewIdView({ interviewId, userId }: Props) {
 		removeInterview.mutate();
 	};
 
+	// Handle loading and error states
+	if (isLoading) return <InterviewIdViewLoader />;
+	if (error) return <InterviewIdViewError />;
+	if (!data) return <InterviewIdViewError />;
+
 	const isActive = data.status === "active";
 	const isUpcoming = data.status === "upcoming";
 	const isCancelled = data.status === "cancelled";
@@ -70,11 +77,6 @@ export function InterviewIdView({ interviewId, userId }: Props) {
 	return (
 		<>
 			<RemoveConfirmationDialog />
-			{/* <UpdateinterviewDialog
-				open={updateinterviewDialogOpen}
-				onOpenChange={setUpdateinterviewDialogOpen}
-				initialValues={data}
-			/> */}
 			<div className="flex-1 p-4 md:px-8 flex flex-col gap-y-4">
 				<InterviewIdViewHeader
 					interviewId={interviewId}
@@ -83,15 +85,9 @@ export function InterviewIdView({ interviewId, userId }: Props) {
 					onRemove={handleRemoveinterview}
 				/>
 				{isCancelled && <CancelledState />}
-				{isCompleted && "Completed"}
+				{isCompleted && <CompletedState data={data} />}
 				{isProcessing && <ProcessingState />}
-				{isUpcoming && (
-					<UpcomingState
-						interviewId={interviewId}
-						onCancelInterview={handleRemoveinterview}
-						isCancelling={removeInterview.isPending}
-					/>
-				)}
+				{isUpcoming && <UpcomingState interviewId={interviewId} />}
 				{isActive && <ActiveState interviewId={interviewId} />}
 			</div>
 		</>

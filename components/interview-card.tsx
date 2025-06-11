@@ -1,14 +1,12 @@
 "use client";
 
-import { createInterview } from "@/actions/interview";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import type { Interview } from "@/types";
-import { useMutation } from "@tanstack/react-query";
 import { Clock } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { GeneratedAvatar } from "./generated-avatar";
+import { Card, CardContent } from "./ui/card";
 
 const bgMap = {
 	easy: "bg-sky-100",
@@ -24,45 +22,17 @@ const difficultyMap = {
 
 interface Props {
 	interview: Interview;
-	userId: string;
 }
 
-export const InterviewCard = ({ interview, userId }: Props) => {
+export const InterviewCard = ({ interview }: Props) => {
 	const router = useRouter();
 
-	const createMeeting = useMutation({
-		mutationKey: ["interview", "create"],
-		mutationFn: () =>
-			createInterview(
-				{
-					name: interview.name,
-					agentId: interview.agentId,
-				},
-				userId,
-			),
-		onSuccess: async () => {
-			router.push(`/interview/${interview.id}`);
-		},
-		onError: (error) => {
-			toast.error(error.message);
-		},
-	});
-
-	const handleCreateInterview = () => {
-		createMeeting.mutate();
-	};
-
 	return (
-		<div
-			className="block cursor-pointer"
-			onClick={handleCreateInterview}
-			onKeyDown={(e) => {
-				if (e.key === "Enter" || e.key === " ") {
-					handleCreateInterview();
-				}
-			}}
+		<Card
+			className="block cursor-pointer p-0"
+			onClick={() => router.push(`/interview/${interview.id}`)}
 		>
-			<div className="rounded-xl overflow-hidden h-full flex flex-col">
+			<CardContent className="rounded-xl overflow-hidden h-full flex flex-col p-0">
 				<div
 					className={cn(
 						"p-8 flex items-center justify-center",
@@ -75,7 +45,7 @@ export const InterviewCard = ({ interview, userId }: Props) => {
 						className="h-16 w-16"
 					/>
 				</div>
-				<div className="p-4 border border-t-0 rounded-b-xl flex-1 flex flex-col">
+				<div className="p-4 flex-1 flex flex-col">
 					<h3 className="font-bold text-lg">{interview.name}</h3>
 					<p className="text-sm">{interview.description}</p>
 					<div className="mt-auto pt-4 flex items-center gap-4">
@@ -95,7 +65,7 @@ export const InterviewCard = ({ interview, userId }: Props) => {
 						</Badge>
 					</div>
 				</div>
-			</div>
-		</div>
+			</CardContent>
+		</Card>
 	);
 };
