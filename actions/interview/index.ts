@@ -1,34 +1,16 @@
 "use server";
 
 import { db } from "@/db";
-import { agents, interviews, user } from "@/db/schema";
-import { generateAvatarUri } from "@/lib/avatar";
-import { streamChat } from "@/lib/stream-chat";
-import { streamVideo } from "@/lib/stream-video";
-import {
-	type Interview,
-	InterviewStatus,
-	type InterviewWithAgent,
-	type StreamTranscriptItem,
-} from "@/types";
-import {
-	and,
-	count,
-	desc,
-	eq,
-	getTableColumns,
-	ilike,
-	inArray,
-	sql,
-} from "drizzle-orm";
-import JSONL from "jsonl-parse-stringify";
-import { z } from "zod";
+import { agents, interviews } from "@/db/schema";
 import {
 	DEFAULT_PAGE,
 	DEFAULT_PAGE_SIZE,
 	MAX_PAGE_SIZE,
 	MIN_PAGE_SIZE,
-} from "../../lib/constants";
+} from "@/lib/constants";
+import type { Interview } from "@/types";
+import { and, count, desc, eq, getTableColumns, ilike, sql } from "drizzle-orm";
+import { z } from "zod";
 
 const interviewInsertSchema = z.object({
 	name: z.string().min(1, { message: "Name is required" }),
@@ -37,7 +19,6 @@ const interviewInsertSchema = z.object({
 
 export const createInterview = async (
 	input: z.infer<typeof interviewInsertSchema>,
-	userId: string,
 ): Promise<Interview> => {
 	const parse = interviewInsertSchema.safeParse(input);
 
@@ -49,52 +30,8 @@ export const createInterview = async (
 
 	const [createdInterview] = await db
 		.insert(interviews)
-		.values({ ...parsedInput, userId })
+		.values({ ...parsedInput })
 		.returning();
-
-	const call = streamVideo.video.call("default", createdInterview.id);
-
-	await call.create({
-		data: {
-			created_by_id: userId,
-			custom: {
-				interviewId: createdInterview.id,
-				interviewName: createdInterview.name,
-			},
-			settings_override: {
-				transcription: {
-					language: "en",
-					mode: "auto-on",
-					closed_caption_mode: "auto-on",
-				},
-				recording: {
-					mode: "auto-on",
-					quality: "1080p",
-				},
-			},
-		},
-	});
-
-	const [existingAgent] = await db
-		.select()
-		.from(agents)
-		.where(eq(agents.id, createdInterview.agentId));
-
-	if (!existingAgent) {
-		throw new Error("Agent not found");
-	}
-
-	await streamVideo.upsertUsers([
-		{
-			id: existingAgent.id,
-			name: existingAgent.name,
-			role: "user",
-			image: generateAvatarUri({
-				seed: existingAgent.name,
-				variant: "botttsNeutral",
-			}),
-		},
-	]);
 
 	return createdInterview;
 };
@@ -105,7 +42,6 @@ const interviewUpdateSchema = interviewInsertSchema.extend({
 
 export const updatedInterview = async (
 	input: z.infer<typeof interviewUpdateSchema>,
-	userId: string,
 ) => {
 	const parse = interviewUpdateSchema.safeParse(input);
 
@@ -118,9 +54,7 @@ export const updatedInterview = async (
 	const [updatedInterview] = await db
 		.update(interviews)
 		.set(input)
-		.where(
-			and(eq(interviews.id, parsedInput.id), eq(interviews.userId, userId)),
-		)
+		.where(eq(interviews.id, parsedInput.id))
 		.returning();
 
 	if (!updatedInterview) {
@@ -130,10 +64,7 @@ export const updatedInterview = async (
 	return updatedInterview;
 };
 
-export const getInterview = async (
-	interviewId: string,
-	userId: string,
-): Promise<InterviewWithAgent> => {
+export const getInterview = async (interviewId: string): Promise<Interview> => {
 	const [existingInterview] = await db
 		.select({
 			...getTableColumns(interviews),
@@ -144,7 +75,7 @@ export const getInterview = async (
 		})
 		.from(interviews)
 		.innerJoin(agents, eq(interviews.agentId, agents.id))
-		.where(and(eq(interviews.id, interviewId), eq(interviews.userId, userId)));
+		.where(eq(interviews.id, interviewId));
 
 	if (!existingInterview) {
 		throw new Error("Interview not found");
@@ -168,50 +99,29 @@ const interviewListSchema = z.object({
 		.string()
 		.transform((val) => val?.trim() || undefined)
 		.optional(),
-	status: z
-		.enum([
-			InterviewStatus.Upcoming,
-			InterviewStatus.Active,
-			InterviewStatus.Completed,
-			InterviewStatus.Processing,
-			InterviewStatus.Cancelled,
-		])
-		.nullish(),
 });
 
 export const getAllInterview = async (
 	query: Record<string, string>,
-	userId: string,
 ): Promise<{
-	items: InterviewWithAgent[];
+	items: Interview[];
 	total: number;
 	totalPages: number;
 }> => {
-	const parsed = interviewListSchema.safeParse(query);
+	const { success, data, error } = interviewListSchema.safeParse(query);
 
-	if (!parsed.success) {
-		throw new Error("Invalid input");
+	if (!success) {
+		throw new Error(error.message);
 	}
 
-	const { page, pageSize, search, status } = parsed.data;
+	const { page, pageSize, search, agentId } = data;
 
-	const data = await db
+	const interviewData = await db
 		.select({
 			...getTableColumns(interviews),
-			agent: agents,
-			duration: sql<number>`EXTRACT(EPOCH FROM (ended_at - started_at))`.as(
-				"duration",
-			),
 		})
 		.from(interviews)
-		.innerJoin(agents, eq(interviews.agentId, agents.id))
-		.where(
-			and(
-				eq(interviews.userId, userId),
-				search ? ilike(interviews.name, `%${search}%`) : undefined,
-				status ? eq(interviews.status, status) : undefined,
-			),
-		)
+		.where(and(search ? ilike(interviews.name, `%${search}%`) : undefined))
 		.orderBy(desc(interviews.createdAt), desc(interviews.id))
 		.limit(pageSize)
 		.offset((page - 1) * pageSize);
@@ -219,19 +129,12 @@ export const getAllInterview = async (
 	const [total] = await db
 		.select({ count: count() })
 		.from(interviews)
-		.innerJoin(agents, eq(interviews.agentId, agents.id))
-		.where(
-			and(
-				eq(interviews.userId, userId),
-				search ? ilike(interviews.name, `%${search}%`) : undefined,
-				status ? eq(interviews.status, status) : undefined,
-			),
-		);
+		.where(and(search ? ilike(interviews.name, `%${search}%`) : undefined));
 
 	const totalPages = Math.ceil(total.count / pageSize);
 
 	return {
-		items: data,
+		items: interviewData,
 		total: total.count,
 		totalPages,
 	};
@@ -240,7 +143,7 @@ export const getAllInterview = async (
 export const deleteInterview = async (interviewId: string, userId: string) => {
 	const [removedInterview] = await db
 		.delete(interviews)
-		.where(and(eq(interviews.id, interviewId), eq(interviews.userId, userId)))
+		.where(eq(interviews.id, interviewId))
 		.returning();
 
 	if (!removedInterview) {
@@ -248,110 +151,4 @@ export const deleteInterview = async (interviewId: string, userId: string) => {
 	}
 
 	return removedInterview;
-};
-
-export const generateStreamToken = async (userId: string): Promise<string> => {
-	const nowInSeconds = Math.floor(Date.now() / 1000);
-	const validity = 60 * 60; // 1 hour
-
-	const token = streamVideo.generateUserToken({
-		user_id: userId,
-		validity_in_seconds: validity,
-		issued_at: nowInSeconds,
-		exp: nowInSeconds + validity,
-	});
-
-	return token;
-};
-
-export const getTranscript = async (interviewId: string, userId: string) => {
-	const [existingInterview] = await db
-		.select()
-		.from(interviews)
-		.where(and(eq(interviews.id, interviewId), eq(interviews.userId, userId)));
-
-	if (!existingInterview) {
-		throw new Error("Interview not found");
-	}
-
-	if (!existingInterview.transcriptUrl) {
-		return [];
-	}
-
-	const transcript = await fetch(existingInterview.transcriptUrl)
-		.then((res) => res.text())
-		.then((text) => JSONL.parse<StreamTranscriptItem>(text))
-		.catch(() => []);
-
-	const speakerIds = [...new Set(transcript.map((item) => item.speaker_id))];
-
-	const userSpeakers = await db
-		.select()
-		.from(user)
-		.where(inArray(user.id, speakerIds))
-		.then((users) =>
-			users.map((user) => ({
-				...user,
-				image:
-					user.image ??
-					generateAvatarUri({
-						seed: user.name,
-						variant: "initials",
-					}),
-			})),
-		);
-
-	const agentSpeakers = await db
-		.select()
-		.from(agents)
-		.where(inArray(agents.id, speakerIds))
-		.then((agents) =>
-			agents.map((agent) => ({
-				...agent,
-				image: generateAvatarUri({
-					seed: agent.name,
-					variant: "botttsNeutral",
-				}),
-			})),
-		);
-
-	const speakers = [...userSpeakers, ...agentSpeakers];
-
-	const transcriptWithSpeakers = transcript.map((item) => {
-		const speaker = speakers.find((speaker) => speaker.id === item.speaker_id);
-
-		if (!speaker) {
-			return {
-				...item,
-				user: {
-					name: "Unknown",
-					image: generateAvatarUri({
-						seed: "Unknown",
-						variant: "initials",
-					}),
-				},
-			};
-		}
-
-		return {
-			...item,
-			user: {
-				name: speaker.name,
-				image: speaker.image,
-			},
-		};
-	});
-
-	return transcriptWithSpeakers;
-};
-
-export const generateChatToken = async (userId: string) => {
-	const token = streamChat.createToken(userId);
-	await streamChat.upsertUsers([
-		{
-			id: userId,
-			role: "admin",
-		},
-	]);
-	return token;
 };

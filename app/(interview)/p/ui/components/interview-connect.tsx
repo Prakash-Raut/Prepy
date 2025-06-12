@@ -1,6 +1,6 @@
 "use client";
 
-import { generateStreamToken } from "@/actions/interview";
+import { generateStreamToken } from "@/actions/user-interview";
 import { Config } from "@/config/env";
 import { generateAvatarUri } from "@/lib/avatar";
 import {

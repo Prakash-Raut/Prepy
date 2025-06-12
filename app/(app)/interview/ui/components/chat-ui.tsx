@@ -1,6 +1,6 @@
 "use client";
 
-import { generateChatToken } from "@/actions/interview";
+import { generateChatToken } from "@/actions/user-interview";
 import { LoadingState } from "@/components/loading-state";
 import { Config } from "@/config/env";
 import { useMutation } from "@tanstack/react-query";

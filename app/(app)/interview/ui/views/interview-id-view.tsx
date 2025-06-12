@@ -1,11 +1,15 @@
 "use client";
 
-import { deleteInterview, getInterview } from "@/actions/interview";
+import { deleteInterview } from "@/actions/interview";
+// import { CompletedState } from "../components/completed-state";
+import {
+	deleteUserInterview,
+	getUserInterview,
+} from "@/actions/user-interview";
 import { ErrorState } from "@/components/error-state";
 import { LoadingState } from "@/components/loading-state";
 import { useConfirm } from "@/hooks/use-confirm";
-// import { CompletedState } from "../components/completed-state";
-import type { InterviewWithAgent } from "@/types";
+import type { UserInterviewWithRelations } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -29,21 +33,24 @@ export function InterviewIdView({ interviewId, userId }: Props) {
 	const [updateinterviewDialogOpen, setUpdateinterviewDialogOpen] =
 		useState(false);
 
-	const { data, isLoading, error } = useQuery<InterviewWithAgent>({
-		queryKey: ["interview", interviewId],
-		queryFn: () => getInterview(interviewId, userId),
+	const { data, isLoading, error } = useQuery<UserInterviewWithRelations>({
+		queryKey: ["user-interview", interviewId],
+		queryFn: () => getUserInterview(interviewId, userId),
 		initialData: () =>
-			queryClient.getQueryData<InterviewWithAgent>(["interview", interviewId]),
+			queryClient.getQueryData<UserInterviewWithRelations>([
+				"user-interview",
+				interviewId,
+			]),
 		staleTime: 5 * 60 * 1000, // 5 minutes
 		refetchOnWindowFocus: false,
 	});
 
 	const removeInterview = useMutation({
 		mutationKey: ["interview", interviewId],
-		mutationFn: () => deleteInterview(interviewId, userId),
+		mutationFn: () => deleteUserInterview(interviewId, userId),
 		onSuccess: async () => {
 			await queryClient.invalidateQueries({
-				queryKey: ["interview", interviewId],
+				queryKey: ["user-interview", interviewId],
 			});
 			router.push("/explore");
 		},
@@ -80,7 +87,7 @@ export function InterviewIdView({ interviewId, userId }: Props) {
 			<div className="flex-1 p-4 md:px-8 flex flex-col gap-y-4">
 				<InterviewIdViewHeader
 					interviewId={interviewId}
-					interviewName={data.name}
+					interviewName={data.interview.name}
 					onEdit={() => setUpdateinterviewDialogOpen(true)}
 					onRemove={handleRemoveinterview}
 				/>

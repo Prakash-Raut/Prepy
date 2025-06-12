@@ -1,29 +1,19 @@
-import type { agents, interviews } from "@/db/schema";
+import type { agents, interviews, user, userInterviews } from "@/db/schema";
 
 export type ChildrenProps = {
 	children: React.ReactNode;
 };
 
+export type User = typeof user.$inferSelect;
 export type Interview = typeof interviews.$inferSelect;
 export type Agent = typeof agents.$inferSelect;
 
-export type InterviewWithAgent = {
-	id: string;
-	name: string;
-	description: string;
-	createdAt: Date;
-	updatedAt: Date;
-	userId: string;
-	agentId: string;
-	difficulty: "easy" | "medium" | "hard";
-	durationInMinutes: "15" | "30" | "45" | "60";
-	status: "upcoming" | "active" | "completed" | "processing" | "cancelled";
-	startedAt: Date | null;
-	endedAt: Date | null;
-	transcriptUrl: string | null;
-	recordingUrl: string | null;
-	summary: string | null;
+export type UserInterview = typeof userInterviews.$inferSelect;
+
+export type UserInterviewWithRelations = typeof userInterviews.$inferSelect & {
+	interview: Interview;
 	agent: Agent;
+	user: User;
 };
 
 export enum InterviewStatus {
@@ -41,3 +31,27 @@ export type StreamTranscriptItem = {
 	start_ts: number;
 	stop_ts: number;
 };
+
+export interface InterviewProcessingEvent {
+	name: "interviews/processing";
+	data: {
+		interviewId: string;
+		transcriptUrl: string;
+	};
+}
+
+export interface TranscriptWithSpeaker {
+	speaker_id: string;
+	speaker: string;
+	text: string;
+	timestamp: number;
+	user?: {
+		name: string;
+	};
+}
+
+export interface InterviewProcessingResult {
+	summary: string;
+	status: "completed" | "failed";
+	error?: string;
+}

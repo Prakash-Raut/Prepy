@@ -33,13 +33,10 @@ export default async function InterviewListPage() {
 		event: "explore_page_viewed",
 	});
 
-	const { items } = await getAllInterview(
-		{
-			page: "1",
-			pageSize: "10",
-		},
-		session.user.id,
-	);
+	const { items } = await getAllInterview({
+		page: "1",
+		pageSize: "10",
+	});
 
 	return (
 		<div className="min-h-screen px-24">

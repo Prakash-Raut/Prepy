@@ -98,9 +98,6 @@ export const interviews = pgTable("interviews", {
 		.$defaultFn(() => nanoid()),
 	name: text("name").notNull(),
 	description: text("description").notNull().default("No description"),
-	userId: text("user_id")
-		.notNull()
-		.references(() => user.id, { onDelete: "cascade" }),
 	agentId: text("agent_id")
 		.notNull()
 		.references(() => agents.id, { onDelete: "cascade" }),
@@ -108,6 +105,27 @@ export const interviews = pgTable("interviews", {
 	durationInMinutes: interviewDuration("duration_in_minutes")
 		.notNull()
 		.default("15"),
+	createdAt: timestamp("created_at")
+		.$defaultFn(() => new Date())
+		.notNull(),
+	updatedAt: timestamp("updated_at")
+		.$defaultFn(() => new Date())
+		.notNull(),
+});
+
+export const userInterviews = pgTable("user_interviews", {
+	id: text("id")
+		.primaryKey()
+		.$defaultFn(() => nanoid()),
+	userId: text("user_id")
+		.notNull()
+		.references(() => user.id, { onDelete: "cascade" }),
+	interviewId: text("interview_id")
+		.notNull()
+		.references(() => interviews.id, { onDelete: "cascade" }),
+	agentId: text("agent_id")
+		.notNull()
+		.references(() => agents.id, { onDelete: "cascade" }),
 	status: interviewStatus("status").notNull().default("upcoming"),
 	startedAt: timestamp("started_at"),
 	endedAt: timestamp("ended_at"),

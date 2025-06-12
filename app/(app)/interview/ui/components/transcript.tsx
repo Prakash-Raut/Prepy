@@ -1,6 +1,6 @@
 "use client";
 
-import { getTranscript } from "@/actions/interview";
+import { getTranscript } from "@/actions/user-interview";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";

@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatDuration } from "@/lib/utils";
-import type { InterviewWithAgent } from "@/types";
+import type { UserInterviewWithRelations } from "@/types";
 import { format } from "date-fns";
 import {
 	BookOpenTextIcon,
@@ -20,7 +20,7 @@ import { ChatProvider } from "./chat-provider";
 import { Transcript } from "./transcript";
 
 interface Props {
-	data: InterviewWithAgent;
+	data: UserInterviewWithRelations;
 }
 
 export const CompletedState = ({ data }: Props) => {
@@ -63,7 +63,7 @@ export const CompletedState = ({ data }: Props) => {
 							<div className="bg-white rounded-lg border">
 								<div className="flex flex-col gap-y-5 col-span-5 px-4 py-5">
 									<h2 className="text-2xl font-medium capitalize">
-										{data.name}
+										{data.interview.name}
 									</h2>
 									<div className="flex gap-x-2 items-center">
 										<Link
@@ -87,8 +87,10 @@ export const CompletedState = ({ data }: Props) => {
 											className="flex items-center gap-x-2 [&>svg]:size-4"
 										>
 											<ClockFadingIcon className="text-blue-700" />
-											{data.durationInMinutes
-												? formatDuration(Number(data.durationInMinutes))
+											{data.interview.durationInMinutes
+												? formatDuration(
+														Number(data.interview.durationInMinutes),
+													)
 												: "No duration"}
 										</Badge>
 										<div>
@@ -187,7 +189,10 @@ export const CompletedState = ({ data }: Props) => {
 							</div>
 						</TabsContent>
 						<TabsContent value="chat">
-							<ChatProvider interviewId={data.id} interviewName={data.name} />
+							<ChatProvider
+								interviewId={data.id}
+								interviewName={data.interview.name}
+							/>
 						</TabsContent>
 						<ScrollBar orientation="horizontal" />
 					</ScrollArea>

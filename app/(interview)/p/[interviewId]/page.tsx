@@ -1,4 +1,4 @@
-import { getInterview } from "@/actions/interview";
+import { getUserInterview } from "@/actions/user-interview";
 import PostHogClient from "@/app/posthog";
 import { auth } from "@/lib/auth";
 import { getQueryClient } from "@/lib/query-client";
@@ -31,8 +31,8 @@ const Page = async ({ params }: Props) => {
 	const queryClient = await getQueryClient();
 
 	queryClient.prefetchQuery({
-		queryKey: ["interview", interviewId],
-		queryFn: () => getInterview(interviewId, session.user.id),
+		queryKey: ["user-interview", interviewId],
+		queryFn: () => getUserInterview(interviewId, session.user.id),
 	});
 
 	return (

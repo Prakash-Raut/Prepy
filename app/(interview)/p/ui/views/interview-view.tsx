@@ -1,6 +1,6 @@
 "use client";
 
-import { getInterview } from "@/actions/interview";
+import { getUserInterview } from "@/actions/user-interview";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { InterviewProvider } from "../components/interview-provider";
 
@@ -11,11 +11,14 @@ interface Props {
 
 export const InterviewView = ({ interviewId, userId }: Props) => {
 	const { data } = useSuspenseQuery({
-		queryKey: ["interview", interviewId],
-		queryFn: () => getInterview(interviewId, userId),
+		queryKey: ["user-interview", interviewId],
+		queryFn: () => getUserInterview(interviewId, userId),
 	});
 
 	return (
-		<InterviewProvider interviewId={interviewId} interviewName={data.name} />
+		<InterviewProvider
+			interviewId={interviewId}
+			interviewName={data.interview.name}
+		/>
 	);
 };

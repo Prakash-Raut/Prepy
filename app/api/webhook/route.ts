@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 
 import { Config } from "@/config/env";
 import { db } from "@/db";
-import { agents, interviews } from "@/db/schema";
+import { agents, interviews, userInterviews } from "@/db/schema";
 import { inngest } from "@/inngest/client";
 import { generateAvatarUri } from "@/lib/avatar";
 import { streamChat } from "@/lib/stream-chat";
@@ -36,35 +36,35 @@ async function handleSessionStarted(event: CallSessionStartedEvent) {
 		return NextResponse.json({ error: "Missing interviewId" }, { status: 400 });
 	}
 
-	const [existinginterview] = await db
+	const [existingUserInterview] = await db
 		.select()
-		.from(interviews)
+		.from(userInterviews)
 		.where(
 			and(
-				eq(interviews.id, interviewId),
-				not(eq(interviews.status, "completed")),
-				not(eq(interviews.status, "active")),
-				not(eq(interviews.status, "cancelled")),
-				not(eq(interviews.status, "processing")),
+				eq(userInterviews.id, interviewId),
+				not(eq(userInterviews.status, "completed")),
+				not(eq(userInterviews.status, "active")),
+				not(eq(userInterviews.status, "cancelled")),
+				not(eq(userInterviews.status, "processing")),
 			),
 		);
 
-	if (!existinginterview) {
+	if (!userInterviews) {
 		return NextResponse.json({ error: "interview not found" }, { status: 400 });
 	}
 
 	await db
-		.update(interviews)
+		.update(userInterviews)
 		.set({
 			status: "active",
 			startedAt: new Date(),
 		})
-		.where(and(eq(interviews.id, existinginterview.id)));
+		.where(and(eq(interviews.id, existingUserInterview.id)));
 
 	const [existingAgent] = await db
 		.select()
 		.from(agents)
-		.where(eq(agents.id, existinginterview.agentId));
+		.where(eq(agents.id, existingUserInterview.agentId));
 
 	if (!existingAgent) {
 		return NextResponse.json({ error: "Agent not found" }, { status: 400 });
@@ -106,13 +106,16 @@ async function handleSessionEnded(event: CallSessionEndedEvent) {
 	}
 
 	await db
-		.update(interviews)
+		.update(userInterviews)
 		.set({
 			status: "processing",
 			endedAt: new Date(),
 		})
 		.where(
-			and(eq(interviews.id, interviewId), eq(interviews.status, "active")),
+			and(
+				eq(userInterviews.id, interviewId),
+				eq(userInterviews.status, "active"),
+			),
 		);
 
 	return NextResponse.json({ message: "Session ended" }, { status: 200 });
@@ -125,22 +128,22 @@ async function handleTranscriptionReady(event: CallTranscriptionReadyEvent) {
 		return NextResponse.json({ error: "Missing interviewId" }, { status: 400 });
 	}
 
-	const [updatedinterview] = await db
-		.update(interviews)
+	const [updatedUserinterview] = await db
+		.update(userInterviews)
 		.set({
 			transcriptUrl: event.call_transcription.url,
 		})
-		.where(eq(interviews.id, interviewId))
+		.where(eq(userInterviews.id, interviewId))
 		.returning();
 
-	if (!updatedinterview) {
+	if (!updatedUserinterview) {
 		return NextResponse.json({ error: "interview not found" }, { status: 400 });
 	}
 
 	await inngest.send({
 		name: "interviews/processing",
 		data: {
-			interviewId: updatedinterview.id,
+			interviewId: updatedUserinterview.id,
 			transcriptUrl: event.call_transcription.url,
 		},
 	});
@@ -156,11 +159,11 @@ async function handleRecordingReady(event: CallRecordingReadyEvent) {
 	}
 
 	const [updatedinterview] = await db
-		.update(interviews)
+		.update(userInterviews)
 		.set({
 			recordingUrl: event.call_recording.url,
 		})
-		.where(eq(interviews.id, interviewId))
+		.where(eq(userInterviews.id, interviewId))
 		.returning();
 
 	if (!updatedinterview) {
@@ -184,9 +187,12 @@ async function handleNewMessage(event: MessageNewEvent) {
 
 	const [existingInterview] = await db
 		.select()
-		.from(interviews)
+		.from(userInterviews)
 		.where(
-			and(eq(interviews.id, channelId), eq(interviews.status, "completed")),
+			and(
+				eq(userInterviews.id, channelId),
+				eq(userInterviews.status, "completed"),
+			),
 		);
 
 	if (!existingInterview) {
