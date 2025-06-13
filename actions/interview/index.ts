@@ -9,7 +9,7 @@ import {
 	MIN_PAGE_SIZE,
 } from "@/lib/constants";
 import type { Interview } from "@/types";
-import { and, count, desc, eq, getTableColumns, ilike, sql } from "drizzle-orm";
+import { and, count, desc, eq, getTableColumns, ilike } from "drizzle-orm";
 import { z } from "zod";
 
 const interviewInsertSchema = z.object({
@@ -69,9 +69,6 @@ export const getInterview = async (interviewId: string): Promise<Interview> => {
 		.select({
 			...getTableColumns(interviews),
 			agent: agents,
-			duration: sql<number>`EXTRACT(EPOCH FROM (ended_at - started_at))`.as(
-				"duration",
-			),
 		})
 		.from(interviews)
 		.innerJoin(agents, eq(interviews.agentId, agents.id))

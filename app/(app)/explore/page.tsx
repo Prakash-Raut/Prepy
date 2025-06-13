@@ -3,6 +3,8 @@ import PostHogClient from "@/app/posthog";
 import { InterviewCard } from "@/components/interview-card";
 import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
+import { getOrSetCache } from "@/lib/cache";
+import type { Interview } from "@/types";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -33,10 +35,14 @@ export default async function InterviewListPage() {
 		event: "explore_page_viewed",
 	});
 
-	const { items } = await getAllInterview({
-		page: "1",
-		pageSize: "10",
-	});
+	const interviews: Interview[] = await getOrSetCache(
+		"interviews:page=1:pageSize=10",
+		async () =>
+			getAllInterview({
+				page: "1",
+				pageSize: "10",
+			}).then((res) => res.items),
+	);
 
 	return (
 		<div className="min-h-screen px-24">
@@ -69,7 +75,7 @@ export default async function InterviewListPage() {
 			{/* Interview Cards */}
 			<div className="container py-8">
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-					{items.map((interview) => (
+					{interviews.map((interview) => (
 						<InterviewCard key={interview.id} interview={interview} />
 					))}
 				</div>

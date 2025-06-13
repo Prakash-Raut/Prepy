@@ -1,13 +1,18 @@
-import { Sidebar } from "@/components/sidebar";
+import { AppSidebar } from "@/components/dashboard/app-sidebar";
+import { DashboardNavbar } from "@/components/dashboard/dashboard-navbar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import type { ChildrenProps } from "@/types";
 
-const AppLayout = ({ children }: ChildrenProps) => {
+const DashboardLayout = ({ children }: ChildrenProps) => {
 	return (
-		<main className="flex min-h-screen">
-			<Sidebar />
-			<div className="ml-[80px] flex-1">{children}</div>
-		</main>
+		<SidebarProvider>
+			<AppSidebar />
+			<main className="flex flex-col h-screen w-screen bg-muted overflow-x-hidden">
+				<DashboardNavbar />
+				{children}
+			</main>
+		</SidebarProvider>
 	);
 };
 
-export default AppLayout;
+export default DashboardLayout;
