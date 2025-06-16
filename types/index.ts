@@ -31,27 +31,3 @@ export type StreamTranscriptItem = {
 	start_ts: number;
 	stop_ts: number;
 };
-
-export interface InterviewProcessingEvent {
-	name: "interviews/processing";
-	data: {
-		interviewId: string;
-		transcriptUrl: string;
-	};
-}
-
-export interface TranscriptWithSpeaker {
-	speaker_id: string;
-	speaker: string;
-	text: string;
-	timestamp: number;
-	user?: {
-		name: string;
-	};
-}
-
-export interface InterviewProcessingResult {
-	summary: string;
-	status: "completed" | "failed";
-	error?: string;
-}

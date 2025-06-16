@@ -321,7 +321,6 @@ export async function POST(req: NextRequest) {
 		case "message.new":
 			return handleNewMessage(payload as MessageNewEvent);
 		default:
-			console.log("Ignoring unsupported event type:", eventType);
 			return NextResponse.json({ message: "Event ignored" }, { status: 200 });
 	}
 }

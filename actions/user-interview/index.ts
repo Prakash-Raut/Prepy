@@ -153,7 +153,7 @@ export const getUserInterview = async (
 		.innerJoin(user, eq(userInterviews.userId, user.id))
 		.where(
 			and(
-				eq(userInterviews.id, interviewId),
+				eq(userInterviews.interviewId, interviewId),
 				eq(userInterviews.userId, userId),
 			),
 		);

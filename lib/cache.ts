@@ -24,7 +24,6 @@ export async function getOrSetCache<T>(
 	if (cached !== undefined) {
 		return cached;
 	}
-	console.log("Cache miss");
 	const data = await fetcher();
 	cache.set(key, data);
 	return data;
