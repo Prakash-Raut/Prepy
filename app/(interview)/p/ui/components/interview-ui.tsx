@@ -2,7 +2,6 @@
 
 import { StreamTheme, useCall } from "@stream-io/video-react-sdk";
 import { useState } from "react";
-import { AudioVisualizer } from "./audio-visualizer";
 import { InterviewActive } from "./interview-active";
 import { InterviewEnded } from "./interview-ended";
 import { InterviewLobby } from "./interview-lobby";
@@ -34,7 +33,7 @@ export const InterviewUI = ({ interviewName }: Props) => {
 				<InterviewActive onLeave={handleLeave} interviewName={interviewName} />
 			)}
 			{show === "ended" && <InterviewEnded />}
-			<AudioVisualizer />
+			{/* <AudioVisualizer /> */}
 		</StreamTheme>
 	);
 };

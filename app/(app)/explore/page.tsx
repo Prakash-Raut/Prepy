@@ -1,6 +1,6 @@
 import { getAllInterview } from "@/actions/interview";
 import PostHogClient from "@/app/posthog";
-import { InterviewCard } from "@/components/interview-card";
+import { InterviewCard } from "@/components/general/interview-card";
 import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
 import { getOrSetCache } from "@/lib/cache";
@@ -61,7 +61,10 @@ export default async function InterviewListPage() {
 			{/* Categories */}
 			<div className="border-b">
 				<div className="container py-4">
-					<div className="flex space-x-4 min-w-max justify-center">
+					<div
+						className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 
+					xl:grid-cols-8 gap-2 sm:gap-3 md:gap-4 justify-center w-full"
+					>
 						{categories.map((category) => (
 							<Button key={category.id} variant="outline">
 								<span className="text-xl mb-1">{category.icon}</span>

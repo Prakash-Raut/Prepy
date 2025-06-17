@@ -1,6 +1,6 @@
 "use client";
 
-import { LoadingState } from "@/components/loading-state";
+import { LoadingState } from "@/components/general/loading-state";
 import { authClient } from "@/lib/auth-client";
 import { ChatUI } from "./chat-ui";
 

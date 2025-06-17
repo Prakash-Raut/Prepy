@@ -1,5 +1,3 @@
-// import "server-only";
-
 import { Config } from "@/config/env";
 import { StreamClient } from "@stream-io/node-sdk";
 

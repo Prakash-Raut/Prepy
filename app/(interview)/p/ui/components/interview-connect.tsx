@@ -1,6 +1,5 @@
 "use client";
 
-import { generateStreamToken } from "@/actions/user-interview";
 import { Config } from "@/config/env";
 import { generateAvatarUri } from "@/lib/avatar";
 import {
@@ -31,39 +30,55 @@ export const InterviewConnect = ({
 }: Props) => {
 	const [videoClient, setVideoClient] = useState<StreamVideoClient>();
 	const [videoCall, setVideoCall] = useState<Call>();
+	const [token, setToken] = useState<string>();
 
 	useEffect(() => {
-		const tokenProvider = () => Promise.resolve(generateStreamToken(userId));
+		const getTokenAndInitClient = async () => {
+			const res = await fetch("/api/authenticate", {
+				method: "POST",
+				body: JSON.stringify({ userId }),
+				cache: "no-store",
+			});
+			const result = await res.json();
 
-		const client = StreamVideoClient.getOrCreateInstance({
-			apiKey: Config.NEXT_PUBLIC_STREAM_VIDEO_API_KEY,
-			user: {
-				id: userId,
-				name: userName,
-				image: userImage,
-			},
-			tokenProvider,
-		});
+			setToken(result.token);
 
-		client.connectUser(
-			{
-				id: userId,
-				name: userName,
-				image: generateAvatarUri({
-					seed: userName,
-					variant: "initials",
-				}),
-			},
-			tokenProvider,
-		);
+			if (!token) return;
 
-		setVideoClient(client);
+			const client = StreamVideoClient.getOrCreateInstance({
+				apiKey: Config.NEXT_PUBLIC_STREAM_VIDEO_API_KEY,
+				user: {
+					id: userId,
+					name: userName,
+					image: userImage,
+				},
+				token,
+			});
+
+			client.connectUser(
+				{
+					id: userId,
+					name: userName,
+					image: generateAvatarUri({
+						seed: userName,
+						variant: "initials",
+					}),
+				},
+				token,
+			);
+
+			setVideoClient(client);
+		};
+
+		getTokenAndInitClient();
 
 		return () => {
-			client.disconnectUser();
-			setVideoClient(undefined);
+			if (videoClient) {
+				videoClient.disconnectUser();
+				setVideoClient(undefined);
+			}
 		};
-	}, [userId, userName, userImage]);
+	}, [userId, userName, userImage, token, videoClient]);
 
 	useEffect(() => {
 		if (!videoClient) return;

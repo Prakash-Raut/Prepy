@@ -1,6 +1,6 @@
 "use client";
 
-import { EmptyState } from "@/components/empty-state";
+import { EmptyState } from "@/components/general/empty-state";
 
 export const ProcessingState = () => {
 	return (

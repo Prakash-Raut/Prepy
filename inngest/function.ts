@@ -20,88 +20,75 @@ export const interviewProcessing = inngest.createFunction(
 	async ({ event, step }) => {
 		const { interviewId, transcriptUrl } = event.data;
 
-		try {
-			const rawTranscript = await step.run("fetch-transcript", async () => {
-				const res = await fetch(transcriptUrl);
-				if (!res.ok) throw new Error(`Failed to fetch: ${res.statusText}`);
-				return res.text();
-			});
+		const rawTranscript = await step.run("fetch-transcript", async () => {
+			const res = await fetch(transcriptUrl);
+			if (!res.ok) throw new Error(`Failed to fetch: ${res.statusText}`);
+			return res.text();
+		});
 
-			const transcript: StreamTranscriptItem[] = await step.run(
-				"parse-transcript",
-				() => {
-					const parsed = JSONL.parse(rawTranscript);
-					if (!Array.isArray(parsed) || parsed.length === 0)
-						throw new Error("Invalid or empty transcript");
-					return parsed;
-				},
-			);
+		const transcript: StreamTranscriptItem[] = await step.run(
+			"parse-transcript",
+			() => {
+				const parsed = JSONL.parse(rawTranscript);
+				if (!Array.isArray(parsed) || parsed.length === 0)
+					throw new Error("Invalid or empty transcript");
+				return parsed;
+			},
+		);
 
-			const enriched = await step.run("enrich-transcript", async () => {
-				const speakerIds = [...new Set(transcript.map((t) => t.speaker_id))];
+		const enriched = await step.run("enrich-transcript", async () => {
+			const speakerIds = [...new Set(transcript.map((t) => t.speaker_id))];
 
-				const [users, agentData] = await Promise.all([
-					db.select().from(user).where(inArray(user.id, speakerIds)),
-					db.select().from(agents).where(inArray(agents.id, speakerIds)),
-				]);
+			const [users, agentData] = await Promise.all([
+				db.select().from(user).where(inArray(user.id, speakerIds)),
+				db.select().from(agents).where(inArray(agents.id, speakerIds)),
+			]);
 
-				const speakers = [...users, ...agentData];
+			const speakers = [...users, ...agentData];
 
-				return transcript.map((item) => {
-					const speaker = speakers.find((s) => s.id === item.speaker_id);
+			return transcript.map((item) => {
+				const speaker = speakers.find((s) => s.id === item.speaker_id);
 
-					if (!speaker) {
-						return {
-							...item,
-							user: {
-								name: "Unknown",
-							},
-							speaker: "Unknown",
-							timestamp: item.start_ts,
-						};
-					}
-
+				if (!speaker) {
 					return {
 						...item,
-						speaker: speaker?.name,
+						user: {
+							name: "Unknown",
+						},
+						speaker: "Unknown",
 						timestamp: item.start_ts,
 					};
-				});
+				}
+
+				return {
+					...item,
+					speaker: speaker?.name,
+					timestamp: item.start_ts,
+				};
 			});
+		});
 
-			const summary = await step.run("generate-summary", async () => {
-				const { output } = await summarizer.run(
-					`Please provide a comprehensive summary of the following interview transcript: ${JSON.stringify(enriched)}`,
-				);
-				const firstMsg = output[0] as TextMessage;
-				if (!firstMsg?.content || typeof firstMsg.content !== "string")
-					throw new Error("Invalid summary response");
-				return firstMsg.content;
-			});
-
-			await step.run("update-interview", () =>
-				db
-					.update(userInterviews)
-					.set({
-						summary,
-						status: "completed",
-						updatedAt: new Date(),
-					})
-					.where(eq(userInterviews.id, interviewId)),
+		const summary = await step.run("generate-summary", async () => {
+			const { output } = await summarizer.run(
+				`Please provide a comprehensive summary of the following interview transcript: ${JSON.stringify(enriched)}`,
 			);
+			const firstMsg = output[0] as TextMessage;
+			if (!firstMsg?.content || typeof firstMsg.content !== "string")
+				throw new Error("Invalid summary response");
+			return firstMsg.content;
+		});
 
-			return { status: "completed" };
-		} catch (error) {
-			await step.run("update-failure-status", () =>
-				db
-					.update(userInterviews)
-					.set({
-						status: "cancelled",
-						updatedAt: new Date(),
-					})
-					.where(eq(userInterviews.id, interviewId)),
-			);
-			throw error;
-		}
+		await step.run("update-interview", () =>
+			db
+				.update(userInterviews)
+				.set({
+					summary,
+					status: "completed",
+					updatedAt: new Date(),
+				})
+				.where(eq(userInterviews.id, interviewId)),
+		);
+
+		return { status: "completed" };
 	},
 );

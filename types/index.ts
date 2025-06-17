@@ -1,16 +1,18 @@
 import type { agents, interviews, user, userInterviews } from "@/db/schema";
+import type { InferSelectModel } from "drizzle-orm";
 
 export type ChildrenProps = {
 	children: React.ReactNode;
 };
 
-export type User = typeof user.$inferSelect;
-export type Interview = typeof interviews.$inferSelect;
-export type Agent = typeof agents.$inferSelect;
+export type User = InferSelectModel<typeof user>;
+export type Interview = InferSelectModel<typeof interviews>;
+export type Agent = InferSelectModel<typeof agents>;
+export type UserInterview = InferSelectModel<typeof userInterviews>;
 
-export type UserInterview = typeof userInterviews.$inferSelect;
-
-export type UserInterviewWithRelations = typeof userInterviews.$inferSelect & {
+export type UserInterviewWithRelations = InferSelectModel<
+	typeof userInterviews
+> & {
 	interview: Interview;
 	agent: Agent;
 	user: User;

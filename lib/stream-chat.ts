@@ -1,4 +1,3 @@
-// import "server-only";
 import { Config } from "@/config/env";
 
 import { StreamChat } from "stream-chat";

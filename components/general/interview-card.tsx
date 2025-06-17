@@ -8,8 +8,8 @@ import type { Interview } from "@/types";
 import { Clock } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { Card, CardContent } from "../ui/card";
 import { GeneratedAvatar } from "./generated-avatar";
-import { Card, CardContent } from "./ui/card";
 
 const bgMap = {
 	easy: "bg-sky-100",
@@ -36,25 +36,20 @@ export const InterviewCard = ({ interview }: Props) => {
 	}
 
 	const handleCreateNewUserInterview = async () => {
-		try {
-			const newUserInterview = await createUserInterview(
-				{
-					name: interview.name,
-					agentId: interview.agentId,
-					interviewId: interview.id,
-				},
-				data.user.id,
-			);
+		const newUserInterview = await createUserInterview(
+			{
+				name: interview.name,
+				agentId: interview.agentId,
+				interviewId: interview.id,
+			},
+			data.user.id,
+		);
 
-			if (!newUserInterview) {
-				toast.error("No Interview Created");
-				return;
-			}
-
-			router.push(`/interview/${interview.id}`);
-		} catch (error) {
-			toast.error("Something went wrong");
+		if (!newUserInterview) {
+			return;
 		}
+
+		router.push(`/interview/${interview.id}`);
 	};
 
 	return (

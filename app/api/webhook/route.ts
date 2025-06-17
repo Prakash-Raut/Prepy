@@ -2,11 +2,12 @@ import { type NextRequest, NextResponse } from "next/server";
 
 import { Config } from "@/config/env";
 import { db } from "@/db";
-import { agents, interviews, userInterviews } from "@/db/schema";
+import { agents, userInterviews } from "@/db/schema";
 import { inngest } from "@/inngest/client";
 import { generateAvatarUri } from "@/lib/avatar";
 import { streamChat } from "@/lib/stream-chat";
 import { streamVideo } from "@/lib/stream-video";
+import type { RealtimeClient } from "@openai/realtime-api-beta";
 import type {
 	CallRecordingReadyEvent,
 	CallSessionEndedEvent,
@@ -29,8 +30,13 @@ function verifySignatureWithSDK(body: string, signature: string): boolean {
 	return streamVideo.verifyWebhook(body, signature);
 }
 
+function extractCallId(cid: string): string | null {
+	const parts = cid.split(".");
+	return parts.length > 1 ? parts[1] : null;
+}
+
 async function handleSessionStarted(event: CallSessionStartedEvent) {
-	const interviewId = event.call.custom?.interviewId;
+	const interviewId: string = event.call.custom?.interviewId;
 
 	if (!interviewId) {
 		return NextResponse.json({ error: "Missing interviewId" }, { status: 400 });
@@ -49,7 +55,7 @@ async function handleSessionStarted(event: CallSessionStartedEvent) {
 			),
 		);
 
-	if (!userInterviews) {
+	if (!existingUserInterview) {
 		return NextResponse.json({ error: "interview not found" }, { status: 400 });
 	}
 
@@ -59,7 +65,7 @@ async function handleSessionStarted(event: CallSessionStartedEvent) {
 			status: "active",
 			startedAt: new Date(),
 		})
-		.where(and(eq(interviews.id, existingUserInterview.id)));
+		.where(and(eq(userInterviews.id, existingUserInterview.id)));
 
 	const [existingAgent] = await db
 		.select()
@@ -72,7 +78,7 @@ async function handleSessionStarted(event: CallSessionStartedEvent) {
 
 	const call = streamVideo.video.call("default", interviewId);
 
-	const realtimeClient = await streamVideo.video.connectOpenAi({
+	const realtimeClient: RealtimeClient = await streamVideo.video.connectOpenAi({
 		call,
 		openAiApiKey: Config.OPENAI_API_KEY,
 		agentUserId: existingAgent.id,
@@ -80,13 +86,16 @@ async function handleSessionStarted(event: CallSessionStartedEvent) {
 
 	realtimeClient.updateSession({
 		instructions: existingAgent.instructions,
+		input_audio_transcription: {
+			model: "whisper-1",
+		},
 	});
 
 	return NextResponse.json({ message: "Session started" }, { status: 200 });
 }
 
 async function handleParticipantLeft(event: CallSessionParticipantLeftEvent) {
-	const interviewId = event.call_cid.split(".")[1];
+	const interviewId = extractCallId(event.call_cid);
 
 	if (!interviewId) {
 		return NextResponse.json({ error: "Missing interviewId" }, { status: 400 });
@@ -99,7 +108,7 @@ async function handleParticipantLeft(event: CallSessionParticipantLeftEvent) {
 }
 
 async function handleSessionEnded(event: CallSessionEndedEvent) {
-	const interviewId = event.call_cid.split(".")[1];
+	const interviewId = extractCallId(event.call_cid);
 
 	if (!interviewId) {
 		return NextResponse.json({ error: "Missing interviewId" }, { status: 400 });
@@ -122,7 +131,7 @@ async function handleSessionEnded(event: CallSessionEndedEvent) {
 }
 
 async function handleTranscriptionReady(event: CallTranscriptionReadyEvent) {
-	const interviewId = event.call_cid.split(".")[1];
+	const interviewId = extractCallId(event.call_cid);
 
 	if (!interviewId) {
 		return NextResponse.json({ error: "Missing interviewId" }, { status: 400 });
@@ -152,7 +161,7 @@ async function handleTranscriptionReady(event: CallTranscriptionReadyEvent) {
 }
 
 async function handleRecordingReady(event: CallRecordingReadyEvent) {
-	const interviewId = event.call_cid.split(".")[1];
+	const interviewId = extractCallId(event.call_cid);
 
 	if (!interviewId) {
 		return NextResponse.json({ error: "Missing interviewId" }, { status: 400 });
@@ -232,12 +241,13 @@ async function handleNewMessage(event: MessageNewEvent) {
 		const channel = streamChat.channel("messaging", channelId);
 		await channel.watch();
 
-		const previousFiveMessages = channel.state.messages
-			.slice(-5)
-			.filter((msg) => msg.text && msg.text.trim() !== "")
-			.map<ChatCompletionMessageParam>((message) => ({
-				role: message.user?.id === existingAgent.id ? "assistant" : "user",
-				content: message.text || "",
+		const { messages = [] } = await channel.query({ messages: { limit: 5 } });
+
+		const previousFiveMessages = messages
+			.filter((msg) => msg.text?.trim())
+			.map<ChatCompletionMessageParam>((msg) => ({
+				role: msg.user?.id === existingAgent.id ? "assistant" : "user",
+				content: msg.text || "",
 			}));
 
 		const GPTResponse = await openaiClient.chat.completions.create({

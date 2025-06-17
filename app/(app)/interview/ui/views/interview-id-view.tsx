@@ -1,13 +1,12 @@
 "use client";
 
-import { deleteInterview } from "@/actions/interview";
 // import { CompletedState } from "../components/completed-state";
 import {
 	deleteUserInterview,
 	getUserInterview,
 } from "@/actions/user-interview";
-import { ErrorState } from "@/components/error-state";
-import { LoadingState } from "@/components/loading-state";
+import { ErrorState } from "@/components/general/error-state";
+import { LoadingState } from "@/components/general/loading-state";
 import { useConfirm } from "@/hooks/use-confirm";
 import type { UserInterviewWithRelations } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";

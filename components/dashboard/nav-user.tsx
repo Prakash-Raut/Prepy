@@ -1,6 +1,6 @@
 "use client";
 
-import { GeneratedAvatar } from "@/components/generated-avatar";
+import { GeneratedAvatar } from "@/components/general/generated-avatar";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -47,11 +47,11 @@ export const NavUser = () => {
 		return (
 			<Drawer>
 				<DrawerTrigger
-					className="rounded-lg border border-border/10 p-3 w-full flex 
-			items-center justify-between bg-white/5 hover:bg-white/10 overflow-hidden gap-x-2"
+					className="rounded-lg border border-border/10 p-3 w-full flex items-center 
+					justify-between bg-white/5 hover:bg-white/10 gap-x-2"
 				>
 					{data.user.image ? (
-						<Avatar>
+						<Avatar className="size-9">
 							<AvatarImage src={data.user.image} alt={data.user.name} />
 						</Avatar>
 					) : (
@@ -97,12 +97,16 @@ export const NavUser = () => {
 			<SidebarMenuItem>
 				<DropdownMenu>
 					<DropdownMenuTrigger
-						className="rounded-lg border border-border/10 p-3 w-full flex 
-			items-center justify-between bg-white/5 hover:bg-white/10 overflow-hidden gap-x-2"
+						className="rounded-lg border border-border/10 p-3 w-full flex items-center 
+						justify-between bg-white/5 hover:bg-white/10 gap-x-2"
 					>
 						{data.user.image ? (
 							<Avatar>
-								<AvatarImage src={data.user.image} alt={data.user.name} />
+								<AvatarImage
+									src={data.user.image}
+									alt={data.user.name}
+									className="size-9 "
+								/>
 							</Avatar>
 						) : (
 							<GeneratedAvatar

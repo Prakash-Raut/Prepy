@@ -53,13 +53,37 @@ export const createUserInterview = async (
 		.values({ ...parsedInput, userId })
 		.returning();
 
-	const call = streamVideo.video.call("default", createdUserInterview.id);
+	const [existingUserInterview] = await db
+		.select({
+			userInterview: userInterviews,
+			interview: interviews,
+			agent: agents,
+		})
+		.from(userInterviews)
+		.innerJoin(interviews, eq(userInterviews.interviewId, interviews.id))
+		.innerJoin(agents, eq(userInterviews.agentId, agents.id))
+		.where(
+			and(
+				eq(userInterviews.id, createdUserInterview.id),
+				eq(userInterviews.userId, userId),
+			),
+		);
+
+	if (!existingUserInterview) {
+		throw new Error("User interview not found");
+	}
+
+	const call = streamVideo.video.call(
+		"default",
+		existingUserInterview.interview.id,
+	);
 
 	await call.create({
 		data: {
 			created_by_id: userId,
 			custom: {
-				interviewId: createdUserInterview.id,
+				interviewId: existingUserInterview.interview.id,
+				interviewName: existingUserInterview.interview.name,
 			},
 			settings_override: {
 				transcription: {
@@ -75,22 +99,13 @@ export const createUserInterview = async (
 		},
 	});
 
-	const [existingAgent] = await db
-		.select()
-		.from(agents)
-		.where(eq(agents.id, createdUserInterview.agentId));
-
-	if (!existingAgent) {
-		throw new Error("Agent not found");
-	}
-
 	await streamVideo.upsertUsers([
 		{
-			id: existingAgent.id,
-			name: existingAgent.name,
+			id: existingUserInterview.agent.id,
+			name: existingUserInterview.agent.name,
 			role: "user",
 			image: generateAvatarUri({
-				seed: existingAgent.name,
+				seed: existingUserInterview.agent.name,
 				variant: "botttsNeutral",
 			}),
 		},
@@ -285,16 +300,9 @@ export const deleteUserInterview = async (
 };
 
 export const generateStreamToken = async (userId: string): Promise<string> => {
-	const nowInSeconds = Math.floor(Date.now() / 1000);
-	const validity = 60 * 60; // 1 hour
-
 	const token = streamVideo.generateUserToken({
 		user_id: userId,
-		validity_in_seconds: validity,
-		issued_at: nowInSeconds,
-		exp: nowInSeconds + validity,
 	});
-
 	return token;
 };
 
