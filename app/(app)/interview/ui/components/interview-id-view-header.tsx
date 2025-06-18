@@ -63,7 +63,7 @@ export const InterviewIdViewHeader = ({
 					</Button>
 				</DropdownMenuTrigger>
 				<DropdownMenuContent align="end">
-					<DropdownMenuLabel>My Agents</DropdownMenuLabel>
+					<DropdownMenuLabel>{interviewName}</DropdownMenuLabel>
 					<DropdownMenuSeparator />
 					<DropdownMenuItem onClick={onEdit}>
 						<PencilIcon className="size-4 text-black" />

@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils";
 import type { Interview } from "@/types";
 import { Clock } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { Card, CardContent } from "../ui/card";
 import { GeneratedAvatar } from "./generated-avatar";
 

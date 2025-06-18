@@ -2,10 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 
 export const InterviewEnded = () => {
+	const { interviewId } = useParams();
+
 	return (
-		<div className="flex flex-col items-center justify-center h-full bg-radial from-sidebar-accent to-sidebar">
+		<div className="flex flex-col items-center justify-center h-screen bg-radial from-sidebar-accent to-sidebar">
 			<div className="flex flex-1 items-center justify-center px-8 py-4">
 				<div className="flex flex-col items-center justify-center gap-y-6 bg-background rounded-lg p-10 shadow-sm">
 					<div className="flex flex-col gap-y-2 text-center">
@@ -13,7 +16,7 @@ export const InterviewEnded = () => {
 						<p className="text-sm">Summary will appear in few minutes</p>
 					</div>
 					<Button asChild>
-						<Link href="/explore">Back to interviews</Link>
+						<Link href={`/interview/${interviewId}`}>Back to interviews</Link>
 					</Button>
 				</div>
 			</div>

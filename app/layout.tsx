@@ -2,6 +2,7 @@ import GlobalProvider from "@/lib/providers/global-provider";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({
 	variable: "--font-inter",
@@ -35,6 +36,7 @@ export default function RootLayout({
 		<html lang="en" suppressHydrationWarning>
 			<body className={`${inter.variable} antialiased`}>
 				<GlobalProvider>{children}</GlobalProvider>
+				<Toaster />
 			</body>
 		</html>
 	);

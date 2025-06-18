@@ -37,27 +37,25 @@ export const DashboardNavbar = () => {
 		<>
 			<DashboardCommand open={commandOpen} setOpen={setCommandOpen} />
 			<nav className="flex px-4 gap-x-2 items-center justify-between py-3 border-b bg-background">
-				<div className="flex items-center gap-x-2">
-					<Button className="size-9 " variant="outline" onClick={toggleSidebar}>
-						{state === "collapsed" || isMobile ? (
-							<PanelLeftIcon className="size-4" />
-						) : (
-							<PanelLeftCloseIcon className="size-4" />
-						)}
-					</Button>
-					<Button
-						className="h-9 w-[240px] justify-start font-normal text-muted-foreground hover:text-muted-foreground"
-						variant="outline"
-						size="sm"
-						onClick={() => setCommandOpen((open) => !open)}
-					>
-						<SearchIcon className="size-4" />
-						<span className="ml-2">Search</span>
-						<kbd className="ml-auto pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
-							<span>&#8984;</span>K
-						</kbd>
-					</Button>
-				</div>
+				<Button className="size-9 " variant="outline" onClick={toggleSidebar}>
+					{state === "collapsed" || isMobile ? (
+						<PanelLeftIcon className="size-4" />
+					) : (
+						<PanelLeftCloseIcon className="size-4" />
+					)}
+				</Button>
+				<Button
+					className="h-9 w-[440px] justify-start font-normal text-muted-foreground hover:text-muted-foreground"
+					variant="outline"
+					size="sm"
+					onClick={() => setCommandOpen((open) => !open)}
+				>
+					<SearchIcon className="size-4" />
+					<span className="ml-2">Search</span>
+					<kbd className="ml-auto pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+						<span>&#8984;</span>K
+					</kbd>
+				</Button>
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
 						<Button variant="ghost" size="icon" className="relative h-9 w-9">

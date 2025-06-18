@@ -18,7 +18,7 @@ import type {
 	CallSessionParticipantLeftEvent,
 	CallSessionStartedEvent,
 } from "@stream-io/video-react-sdk";
-import { and, eq, not } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources/index.mjs";
 
@@ -48,10 +48,7 @@ async function handleSessionStarted(event: CallSessionStartedEvent) {
 		.where(
 			and(
 				eq(userInterviews.id, interviewId),
-				not(eq(userInterviews.status, "completed")),
-				not(eq(userInterviews.status, "active")),
-				not(eq(userInterviews.status, "cancelled")),
-				not(eq(userInterviews.status, "processing")),
+				eq(userInterviews.status, "upcoming"),
 			),
 		);
 

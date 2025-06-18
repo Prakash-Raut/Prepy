@@ -1,25 +1,13 @@
 import { getAllInterview } from "@/actions/interview";
 import PostHogClient from "@/app/posthog";
 import { InterviewCard } from "@/components/general/interview-card";
-import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
 import { getOrSetCache } from "@/lib/cache";
 import type { Interview } from "@/types";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-const categories = [
-	{ id: "software", name: "Software", icon: "🔧" },
-	{ id: "data-science", name: "Data science", icon: "📊" },
-	{ id: "finance", name: "Finance", icon: "📈" },
-	{ id: "product", name: "Product", icon: "🧩" },
-	{ id: "consulting", name: "Consulting", icon: "👥" },
-	{ id: "writing", name: "Writing", icon: "📝" },
-	{ id: "legal", name: "Legal", icon: "⚖️" },
-	{ id: "marketing", name: "Marketing", icon: "📣" },
-];
-
-export default async function InterviewListPage() {
+export default async function ExplorePage() {
 	const session = await auth.api.getSession({
 		headers: await headers(),
 	});
@@ -58,26 +46,11 @@ export default async function InterviewListPage() {
 				</div>
 			</div>
 
-			{/* Categories */}
-			<div className="border-b">
-				<div className="container py-4">
-					<div
-						className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 
-					xl:grid-cols-8 gap-2 sm:gap-3 md:gap-4 justify-center w-full"
-					>
-						{categories.map((category) => (
-							<Button key={category.id} variant="outline">
-								<span className="text-xl mb-1">{category.icon}</span>
-								<span className="text-sm">{category.name}</span>
-							</Button>
-						))}
-					</div>
-				</div>
-			</div>
-
-			{/* Interview Cards */}
 			<div className="container py-8">
-				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+				<div
+					className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 
+					xl:grid-cols-4 gap-2 sm:gap-3 md:gap-4 justify-center w-full"
+				>
 					{interviews.map((interview) => (
 						<InterviewCard key={interview.id} interview={interview} />
 					))}
