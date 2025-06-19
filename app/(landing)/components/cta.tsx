@@ -1,5 +1,5 @@
-import { MotionDiv } from "@/lib/dynamic-motion";
 import Link from "next/link";
+import { MotionDiv } from "@/lib/dynamic-motion";
 
 const CTA = () => {
 	return (

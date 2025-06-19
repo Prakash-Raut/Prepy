@@ -1,8 +1,8 @@
+import { betterAuth } from "better-auth";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { Config } from "@/config/env";
 import { db } from "@/db";
 import * as schema from "@/db/schema";
-import { betterAuth } from "better-auth";
-import { drizzleAdapter } from "better-auth/adapters/drizzle";
 
 export const auth = betterAuth({
 	secret: Config.BETTER_AUTH_SECRET,

@@ -1,7 +1,7 @@
 "use server";
 
-import { streamVideo } from "@/lib/stream-video";
 import { type NextRequest, NextResponse } from "next/server";
+import { streamVideo } from "@/lib/stream-video";
 
 export async function POST(request: NextRequest) {
 	const { userId } = await request.json();

@@ -1,5 +1,5 @@
-import type { ChildrenProps } from "@/types";
 import { NuqsAdapter } from "nuqs/adapters/next";
+import type { ChildrenProps } from "@/types";
 import { PostHogProvider } from "./posthog-provider";
 import { QueryProvider } from "./query-provider";
 import { ThemeProvider } from "./theme-provider";

@@ -1,7 +1,7 @@
 "use client";
 
-import { getUserInterview } from "@/actions/user-interview";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { getUserInterview } from "@/actions/user-interview";
 import { InterviewProvider } from "../components/interview-provider";
 
 interface Props {

@@ -1,5 +1,5 @@
-import type { agents, interviews, user, userInterviews } from "@/db/schema";
 import type { InferSelectModel } from "drizzle-orm";
+import type { agents, interviews, user, userInterviews } from "@/db/schema";
 
 export type ChildrenProps = {
 	children: React.ReactNode;

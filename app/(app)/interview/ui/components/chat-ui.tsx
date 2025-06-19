@@ -1,8 +1,5 @@
 "use client";
 
-import { generateChatToken } from "@/actions/user-interview";
-import { LoadingState } from "@/components/general/loading-state";
-import { Config } from "@/config/env";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import type { Channel as StreamChannel } from "stream-chat";
@@ -12,9 +9,12 @@ import {
 	MessageInput,
 	MessageList,
 	Thread,
-	Window,
 	useCreateChatClient,
+	Window,
 } from "stream-chat-react";
+import { generateChatToken } from "@/actions/user-interview";
+import { LoadingState } from "@/components/general/loading-state";
+import { Config } from "@/config/env";
 
 interface Props {
 	interviewId: string;

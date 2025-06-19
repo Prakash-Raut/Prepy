@@ -1,6 +1,6 @@
-import { MotionDiv } from "@/lib/dynamic-motion";
 import { CheckCircle } from "lucide-react";
 import Link from "next/link";
+import { MotionDiv } from "@/lib/dynamic-motion";
 import { Button } from "../../../components/ui/button";
 
 const Pricing = () => {

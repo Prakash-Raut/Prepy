@@ -1,5 +1,7 @@
 "use client";
 
+import { ChevronDown, CreditCardIcon, LogOutIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { GeneratedAvatar } from "@/components/general/generated-avatar";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -22,8 +24,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { authClient } from "@/lib/auth-client";
-import { ChevronDown, CreditCardIcon, LogOutIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { SidebarMenu, SidebarMenuItem } from "../ui/sidebar";
 
 export const NavUser = () => {

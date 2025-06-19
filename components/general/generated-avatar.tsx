@@ -1,9 +1,9 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
 import { botttsNeutral, initials } from "@dicebear/collection";
 import type { Result } from "@dicebear/core";
 import { createAvatar } from "@dicebear/core";
 import { useMemo } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { cn } from "@/lib/utils";
 
 interface GeneratedAvatarProps {
 	seed: string;

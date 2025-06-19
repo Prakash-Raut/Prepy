@@ -1,6 +1,6 @@
-import GlobalProvider from "@/lib/providers/global-provider";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import GlobalProvider from "@/lib/providers/global-provider";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 

@@ -1,8 +1,8 @@
-import PostHogClient from "../posthog";
-
-import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { useId } from "react";
+import { auth } from "@/lib/auth";
+import PostHogClient from "../posthog";
 import CTA from "./components/cta";
 import FAQ from "./components/faq";
 import Feature from "./components/feature";
@@ -16,6 +16,12 @@ import ScrollToTop from "./components/scroll-to-top";
 import Testimonial from "./components/testimonials";
 
 export default async function LandingPage() {
+	const featuresId = useId();
+	const howItWorksId = useId();
+	const testimonialsId = useId();
+	const pricingId = useId();
+	const faqId = useId();
+
 	const session = await auth.api.getSession({
 		headers: await headers(),
 	});
@@ -43,23 +49,23 @@ export default async function LandingPage() {
 				<FloatingCompanyLogos />
 			</section>
 
-			<section id="features" className="sm:px-24 py-20 lg:px-10">
+			<section id={featuresId} className="sm:px-24 py-20 lg:px-10">
 				<Feature />
 			</section>
 
-			<section id="how-it-works" className="sm:px-24 py-20 lg:px-10">
+			<section id={howItWorksId} className="sm:px-24 py-20 lg:px-10">
 				<HowItWorks />
 			</section>
 
-			<section id="testimonials" className="sm:px-24 py-20 lg:px-10">
+			<section id={testimonialsId} className="sm:px-24 py-20 lg:px-10">
 				<Testimonial />
 			</section>
 
-			<section id="pricing" className="sm:px-24 py-20 lg:px-10">
+			<section id={pricingId} className="sm:px-24 py-20 lg:px-10">
 				<Pricing />
 			</section>
 
-			<section id="faq" className="sm:px-24 py-20 lg:px-10">
+			<section id={faqId} className="sm:px-24 py-20 lg:px-10">
 				<FAQ />
 			</section>
 

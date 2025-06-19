@@ -1,11 +1,5 @@
 "use client";
 
-import { GeneratedAvatar } from "@/components/general/generated-avatar";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { formatDuration } from "@/lib/utils";
-import type { UserInterviewWithRelations } from "@/types";
 import { format } from "date-fns";
 import {
 	BookOpenTextIcon,
@@ -16,6 +10,12 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Markdown from "react-markdown";
+import { GeneratedAvatar } from "@/components/general/generated-avatar";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { formatDuration } from "@/lib/utils";
+import type { UserInterviewWithRelations } from "@/types";
 import { ChatProvider } from "./chat-provider";
 import { Transcript } from "./transcript";
 

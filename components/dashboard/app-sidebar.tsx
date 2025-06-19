@@ -7,8 +7,9 @@ import {
 	Settings2Icon,
 	VideoIcon,
 } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import type * as React from "react";
-
 import {
 	Sidebar,
 	SidebarContent,
@@ -19,8 +20,6 @@ import {
 	SidebarMenuItem,
 	SidebarRail,
 } from "@/components/ui/sidebar";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { Separator } from "../ui/separator";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";

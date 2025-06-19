@@ -1,8 +1,8 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { FaAngleUp } from "react-icons/fa";
+import { Button } from "@/components/ui/button";
 
 const ScrollToTop = () => {
 	const [showTopBtn, setShowTopBtn] = useState(false);

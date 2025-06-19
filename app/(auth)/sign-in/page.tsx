@@ -1,7 +1,7 @@
-import PostHogClient from "@/app/posthog";
-import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import PostHogClient from "@/app/posthog";
+import { auth } from "@/lib/auth";
 import { SignInForm } from "./sign-in-form";
 
 export default async function SignInPage() {

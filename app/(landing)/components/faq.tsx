@@ -1,7 +1,7 @@
-import { MotionDiv } from "@/lib/dynamic-motion";
-import { cn } from "@/lib/utils";
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { PlusIcon } from "lucide-react";
+import { MotionDiv } from "@/lib/dynamic-motion";
+import { cn } from "@/lib/utils";
 import {
 	Accordion,
 	AccordionContent,

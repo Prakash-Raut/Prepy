@@ -1,8 +1,8 @@
+import Link from "next/link";
+import type { ComponentProps } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { MotionDiv } from "@/lib/dynamic-motion";
-import Link from "next/link";
-import type { ComponentProps } from "react";
 import { Marquee } from "../../../components/ui/marquee";
 
 const testimonials = [

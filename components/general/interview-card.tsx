@@ -1,12 +1,12 @@
 "use client";
 
+import { Clock } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { createUserInterview } from "@/actions/user-interview";
 import { Badge } from "@/components/ui/badge";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import type { Interview } from "@/types";
-import { Clock } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { Card, CardContent } from "../ui/card";
 import { GeneratedAvatar } from "./generated-avatar";
 

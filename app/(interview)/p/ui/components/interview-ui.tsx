@@ -2,7 +2,6 @@
 
 import { StreamTheme, useCall } from "@stream-io/video-react-sdk";
 import { useState } from "react";
-import { toast } from "sonner";
 import { InterviewActive } from "./interview-active";
 import { InterviewEnded } from "./interview-ended";
 import { InterviewLobby } from "./interview-lobby";

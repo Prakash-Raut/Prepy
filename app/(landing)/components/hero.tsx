@@ -1,6 +1,6 @@
+import { PlayIcon, VideoIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { PlayIcon, VideoIcon } from "lucide-react";
 
 const Hero = () => {
 	return (

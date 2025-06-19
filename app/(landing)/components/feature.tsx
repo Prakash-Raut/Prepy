@@ -1,5 +1,3 @@
-import { Button } from "@/components/ui/button";
-import { MotionDiv, MotionH2, MotionP } from "@/lib/dynamic-motion";
 import {
 	Award,
 	BarChart3,
@@ -8,6 +6,8 @@ import {
 	Video,
 	Zap,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { MotionDiv, MotionH2, MotionP } from "@/lib/dynamic-motion";
 
 const features = [
 	{

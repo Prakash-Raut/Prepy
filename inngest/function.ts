@@ -1,10 +1,10 @@
+import { createAgent, openai, type TextMessage } from "@inngest/agent-kit";
+import { eq, inArray } from "drizzle-orm";
+import JSONL from "jsonl-parse-stringify";
 import { Config } from "@/config/env";
 import { db } from "@/db";
 import { agents, user, userInterviews } from "@/db/schema";
 import type { StreamTranscriptItem } from "@/types";
-import { type TextMessage, createAgent, openai } from "@inngest/agent-kit";
-import { eq, inArray } from "drizzle-orm";
-import JSONL from "jsonl-parse-stringify";
 import { inngest } from "./client";
 
 const summarizer = createAgent({

@@ -58,7 +58,7 @@ const activities = [
 export function ActivityTimeline() {
 	return (
 		<div className="space-y-4">
-			{activities.map((activity, index) => (
+			{activities.map((activity) => (
 				<div key={activity.id} className="flex items-start gap-4">
 					<div className={`p-2 rounded-lg ${activity.bgColor} flex-shrink-0`}>
 						<activity.icon className={`h-4 w-4 ${activity.color}`} />

@@ -1,5 +1,12 @@
 "use client";
 
+import {
+	BellIcon,
+	PanelLeftCloseIcon,
+	PanelLeftIcon,
+	SearchIcon,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -8,13 +15,6 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useSidebar } from "@/components/ui/sidebar";
-import {
-	BellIcon,
-	PanelLeftCloseIcon,
-	PanelLeftIcon,
-	SearchIcon,
-} from "lucide-react";
-import { useEffect, useState } from "react";
 import { Badge } from "../ui/badge";
 import { DashboardCommand } from "./dashboard-command";
 

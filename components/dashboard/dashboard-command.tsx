@@ -1,5 +1,8 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { type Dispatch, type SetStateAction, useState } from "react";
 import { getAllInterview } from "@/actions/interview";
 import {
 	CommandEmpty,
@@ -9,9 +12,6 @@ import {
 	CommandList,
 	CommandResponsiveDialog,
 } from "@/components/ui/command";
-import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
-import { type Dispatch, type SetStateAction, useState } from "react";
 import { GeneratedAvatar } from "../general/generated-avatar";
 
 type Props = {

@@ -1,9 +1,9 @@
 "use client";
 
-import { ResponsiveDialog } from "@/components/general/responsive-dialog";
-import { Button } from "@/components/ui/button";
 import type { JSX } from "react";
 import { useState } from "react";
+import { ResponsiveDialog } from "@/components/general/responsive-dialog";
+import { Button } from "@/components/ui/button";
 
 export const useConfirm = (
 	title: string,

@@ -1,7 +1,5 @@
 "use client";
 
-import { Config } from "@/config/env";
-import { generateAvatarUri } from "@/lib/avatar";
 import {
 	type Call,
 	CallingState,
@@ -11,6 +9,8 @@ import {
 } from "@stream-io/video-react-sdk";
 import { LoaderIcon } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Config } from "@/config/env";
+import { generateAvatarUri } from "@/lib/avatar";
 import { InterviewUI } from "./interview-ui";
 
 interface Props {

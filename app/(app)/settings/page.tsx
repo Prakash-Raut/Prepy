@@ -2,8 +2,12 @@ import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { useId } from "react";
 
 export default async function Settings() {
+	const settingsId = useId();
+	const nameId = useId();
+	const emailId = useId();
 	const session = await auth.api.getSession({
 		headers: await headers(),
 	});
@@ -13,7 +17,7 @@ export default async function Settings() {
 	}
 
 	return (
-		<section id="settings" className="container mx-auto px-24 py-6">
+		<section id={settingsId} className="container mx-auto px-24 py-6">
 			<form>
 				<div className="space-y-12">
 					<div className="border-b border-gray-900/10 pb-12">
@@ -34,7 +38,7 @@ export default async function Settings() {
 								</label>
 								<div className="mt-2">
 									<input
-										id="name"
+										id={nameId}
 										name="name"
 										type="text"
 										value={session.user?.name ?? ""}
@@ -53,7 +57,7 @@ export default async function Settings() {
 								</label>
 								<div className="mt-2">
 									<input
-										id="email"
+										id={emailId}
 										name="email"
 										type="email"
 										value={session.user?.email ?? ""}

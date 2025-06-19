@@ -1,15 +1,15 @@
 "use client";
 
-import { getTranscript } from "@/actions/user-interview";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { generateAvatarUri } from "@/lib/avatar";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { SearchIcon } from "lucide-react";
 import { useState } from "react";
 import Highlighter from "react-highlight-words";
+import { getTranscript } from "@/actions/user-interview";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { generateAvatarUri } from "@/lib/avatar";
 
 interface Props {
 	interviewId: string;

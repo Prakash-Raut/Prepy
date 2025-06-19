@@ -1,13 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
 import {
 	ArrowRight,
 	Calendar,
@@ -16,6 +8,14 @@ import {
 	Play,
 	TrendingUp,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { ActivityTimeline } from "../components/activity-timeline";
 import { InterviewTable } from "../components/interview-table";
 import { PerformanceChart } from "../components/performance-chart";

@@ -1,8 +1,8 @@
 "use client";
 
+import { LoaderIcon } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { generateAvatarUri } from "@/lib/avatar";
-import { LoaderIcon } from "lucide-react";
 import { InterviewConnect } from "./interview-connect";
 
 interface Props {
