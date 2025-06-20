@@ -86,7 +86,7 @@ export const interviewProcessing = inngest.createFunction(
 					status: "completed",
 					updatedAt: new Date(),
 				})
-				.where(eq(userInterviews.id, interviewId)),
+				.where(eq(userInterviews.interviewId, interviewId)),
 		);
 
 		return { status: "completed" };

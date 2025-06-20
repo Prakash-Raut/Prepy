@@ -187,9 +187,9 @@ async function handleTranscriptionReady(event: CallTranscriptionReadyEvent) {
 		}
 
 		await inngest.send({
-			name: "interviews/processing",
+			name: "interview/processing",
 			data: {
-				interviewId: updatedUserinterview.id,
+				interviewId: updatedUserinterview.interviewId,
 				transcriptUrl: event.call_transcription.url,
 			},
 		});
@@ -351,6 +351,8 @@ async function handleNewMessage(event: MessageNewEvent) {
 				},
 			});
 		}
+
+		return NextResponse.json({ message: "Webhook received" }, { status: 200 });
 	} catch (error) {
 		return NextResponse.json(
 			{ error: "Internal server error" },
