@@ -1,12 +1,12 @@
-import * as AccordionPrimitive from "@radix-ui/react-accordion";
-import { PlusIcon } from "lucide-react";
 import { MotionDiv } from "@/lib/dynamic-motion";
 import { cn } from "@/lib/utils";
+import * as AccordionPrimitive from "@radix-ui/react-accordion";
+import { PlusIcon } from "lucide-react";
 import {
 	Accordion,
 	AccordionContent,
 	AccordionItem,
-} from "../../../components/ui/accordion";
+} from "../../../../components/ui/accordion";
 
 const faq = [
 	{

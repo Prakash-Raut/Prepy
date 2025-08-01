@@ -24,24 +24,36 @@ import {
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
+import { trackEvent } from "@/lib/tracking";
 
-const signInFormSchema = z.object({
-	email: z.string().email(),
-	password: z
-		.string()
-		.min(1, {
-			message: "Password is required",
-		})
-		.regex(
-			/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-			{
-				message:
-					"Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character",
-			},
-		),
-});
+const signUpFormSchema = z
+	.object({
+		name: z.string().min(1, {
+			message: "Name is required",
+		}),
+		email: z.string().email(),
+		password: z
+			.string()
+			.min(1, {
+				message: "Password is required",
+			})
+			.regex(
+				/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+				{
+					message:
+						"Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character",
+				},
+			),
+		confirmPassword: z.string().min(1, {
+			message: "Confirm password is required",
+		}),
+	})
+	.refine((data) => data.password === data.confirmPassword, {
+		message: "Passwords do not match",
+		path: ["confirmPassword"],
+	});
 
-export function SignInForm({
+export function SignUpForm({
 	className,
 	...props
 }: React.ComponentProps<"div">) {
@@ -49,28 +61,32 @@ export function SignInForm({
 	const [error, setError] = useState<string | null>(null);
 	const [isPending, setIsPending] = useState(false);
 
-	const form = useForm<z.infer<typeof signInFormSchema>>({
-		resolver: zodResolver(signInFormSchema),
+	const form = useForm<z.infer<typeof signUpFormSchema>>({
+		resolver: zodResolver(signUpFormSchema),
 		defaultValues: {
+			name: "",
 			email: "",
 			password: "",
+			confirmPassword: "",
 		},
 	});
 
-	const submitAction = (data: z.infer<typeof signInFormSchema>) => {
+	const submitAction = (data: z.infer<typeof signUpFormSchema>) => {
 		setError(null);
 		setIsPending(true);
+		trackEvent("Signup Button Clicked", { source: "homepage" });
 		try {
-			authClient.signIn.email(
+			setIsPending(true);
+			authClient.signUp.email(
 				{
+					name: data.name,
 					email: data.email,
 					password: data.password,
 					callbackURL: "/home",
 				},
 				{
 					onSuccess: () => {
-						toast.success("Signed in");
-						router.push("/home");
+						toast.success("Signed up");
 					},
 					onError: ({ error }) => {
 						setError(error.message);
@@ -78,7 +94,7 @@ export function SignInForm({
 				},
 			);
 		} catch (error) {
-			setError("Invalid credentials");
+			setError("Something went wrong, please try again.");
 		} finally {
 			setIsPending(false);
 		}
@@ -115,16 +131,31 @@ export function SignInForm({
 			<Card className="overflow-hidden py-0">
 				<CardContent className="grid p-0 md:grid-cols-2">
 					<Form {...form}>
-						<div className="p-6 md:p-8">
-							<form
-								onSubmit={form.handleSubmit(submitAction)}
-								className="flex flex-col gap-6"
-							>
+						<form
+							className="p-6 md:p-8"
+							onSubmit={form.handleSubmit(submitAction)}
+						>
+							<div className="flex flex-col gap-6">
 								<div className="flex flex-col items-center text-center">
-									<h1 className="text-2xl font-bold">Welcome back</h1>
+									<h1 className="text-2xl font-bold">Let&apos;s get started</h1>
 									<p className="text-balance text-muted-foreground">
-										Login to your Prepy account
+										Create your account
 									</p>
+								</div>
+								<div className="grid gap-2">
+									<FormField
+										control={form.control}
+										name="name"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Name</FormLabel>
+												<FormControl>
+													<Input placeholder="John Doe" {...field} />
+												</FormControl>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
 								</div>
 								<div className="grid gap-2">
 									<FormField
@@ -142,20 +173,31 @@ export function SignInForm({
 									/>
 								</div>
 								<div className="grid gap-2">
-									<div className="flex items-end justify-end">
-										<Link
-											href="#"
-											className="ml-auto text-sm underline-offset-2 hover:underline"
-										>
-											Forgot your password?
-										</Link>
-									</div>
 									<FormField
 										control={form.control}
 										name="password"
 										render={({ field }) => (
 											<FormItem>
 												<FormLabel>Password</FormLabel>
+												<FormControl>
+													<Input
+														placeholder="********"
+														{...field}
+														type="password"
+													/>
+												</FormControl>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
+								</div>
+								<div className="grid gap-2">
+									<FormField
+										control={form.control}
+										name="confirmPassword"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Confirm Password</FormLabel>
 												<FormControl>
 													<Input
 														placeholder="********"
@@ -175,10 +217,8 @@ export function SignInForm({
 									</Alert>
 								)}
 								<Button disabled={isPending} type="submit" className="w-full">
-									Sign in
+									Sign up
 								</Button>
-							</form>
-							<div className="flex flex-col gap-6 mt-6">
 								<div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
 									<span className="relative z-10 bg-background px-2 text-muted-foreground">
 										Or continue with
@@ -203,16 +243,16 @@ export function SignInForm({
 									</Button>
 								</div>
 								<div className="text-center text-sm">
-									Don&apos;t have an account?{" "}
+									Already have an account?{" "}
 									<Link
-										href="/sign-up"
+										href="/sign-in"
 										className="underline underline-offset-4"
 									>
-										Sign up
+										Sign in
 									</Link>
 								</div>
 							</div>
-						</div>
+						</form>
 					</Form>
 					<div className="bg-radial from-sidebar-accent to-sidebar relative hidden md:flex flex-col gap-y-4 items-center justify-center">
 						<Image
@@ -221,7 +261,6 @@ export function SignInForm({
 							className=""
 							width={92}
 							height={92}
-							priority
 						/>
 						<p className="text-2xl font-semibold text-white">Prepy AI</p>
 					</div>

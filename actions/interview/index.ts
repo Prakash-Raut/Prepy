@@ -1,7 +1,5 @@
 "use server";
 
-import { and, count, desc, eq, getTableColumns, ilike } from "drizzle-orm";
-import { z } from "zod";
 import { db } from "@/db";
 import { agents, interviews } from "@/db/schema";
 import {
@@ -11,6 +9,8 @@ import {
 	MIN_PAGE_SIZE,
 } from "@/lib/constants";
 import type { Interview } from "@/types";
+import { and, count, desc, eq, getTableColumns, ilike } from "drizzle-orm";
+import { z } from "zod";
 
 const interviewInsertSchema = z.object({
 	name: z.string().min(1, { message: "Name is required" }),
@@ -111,7 +111,7 @@ export const getAllInterview = async (
 		throw new Error(error.message);
 	}
 
-	const { page, pageSize, search, agentId } = data;
+	const { page, pageSize, search } = data;
 
 	const interviewData = await db
 		.select({
@@ -137,7 +137,7 @@ export const getAllInterview = async (
 	};
 };
 
-export const deleteInterview = async (interviewId: string, userId: string) => {
+export const deleteInterview = async (interviewId: string) => {
 	const [removedInterview] = await db
 		.delete(interviews)
 		.where(eq(interviews.id, interviewId))

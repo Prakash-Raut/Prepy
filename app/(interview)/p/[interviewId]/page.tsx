@@ -1,11 +1,11 @@
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 import { getUserInterview } from "@/actions/user-interview";
 import PostHogClient from "@/app/posthog";
 import { auth } from "@/lib/auth";
 import { getQueryClient } from "@/lib/query-client";
-import { InterviewView } from "../ui/views/interview-view";
+import { InterviewView } from "@/modules/interview/ui/views/interview-view";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 interface Props {
 	params: Promise<{ interviewId: string }>;

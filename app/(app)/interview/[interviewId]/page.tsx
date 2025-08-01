@@ -1,8 +1,3 @@
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-import { Suspense } from "react";
-import { ErrorBoundary } from "react-error-boundary";
 import { getUserInterview } from "@/actions/user-interview";
 import PostHogClient from "@/app/posthog";
 import { auth } from "@/lib/auth";
@@ -11,7 +6,12 @@ import {
 	InterviewIdView,
 	InterviewIdViewError,
 	InterviewIdViewLoader,
-} from "../ui/views/interview-id-view";
+} from "@/modules/intervu/ui/views/interview-id-view";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { Suspense } from "react";
+import { ErrorBoundary } from "react-error-boundary";
 
 interface Props {
 	params: Promise<{ interviewId: string }>;

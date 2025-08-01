@@ -1,19 +1,19 @@
+import { auth } from "@/lib/auth";
+import CTA from "@/modules/landing/ui/components/cta";
+import FAQ from "@/modules/landing/ui/components/faq";
+import Feature from "@/modules/landing/ui/components/feature";
+import Footer from "@/modules/landing/ui/components/footer";
+import Hero from "@/modules/landing/ui/components/hero";
+import HowItWorks from "@/modules/landing/ui/components/how-it-works";
+import FloatingCompanyLogos from "@/modules/landing/ui/components/logos";
+import Navbar from "@/modules/landing/ui/components/navbar/navbar";
+import Pricing from "@/modules/landing/ui/components/pricing";
+import ScrollToTop from "@/modules/landing/ui/components/scroll-to-top";
+import Testimonial from "@/modules/landing/ui/components/testimonials";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { useId } from "react";
-import { auth } from "@/lib/auth";
 import PostHogClient from "../posthog";
-import CTA from "./components/cta";
-import FAQ from "./components/faq";
-import Feature from "./components/feature";
-import Footer from "./components/footer";
-import Hero from "./components/hero";
-import HowItWorks from "./components/how-it-works";
-import FloatingCompanyLogos from "./components/logos";
-import Navbar from "./components/navbar/navbar";
-import Pricing from "./components/pricing";
-import ScrollToTop from "./components/scroll-to-top";
-import Testimonial from "./components/testimonials";
 
 export default async function LandingPage() {
 	const featuresId = useId();

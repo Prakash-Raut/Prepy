@@ -1,6 +1,5 @@
 "use client";
 
-import { Download, Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,6 +10,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
+import { Download, Eye } from "lucide-react";
 
 const interviews = [
 	{
@@ -148,7 +148,7 @@ export function InterviewTable() {
 								{interview.position}
 							</TableCell>
 							<TableCell className="text-slate-600 dark:text-slate-400">
-								{new Date(interview.date).toLocaleDateString()}
+								{interview.date}
 							</TableCell>
 							<TableCell>{getStatusBadge(interview.status)}</TableCell>
 							<TableCell>
