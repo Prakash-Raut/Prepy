@@ -1,17 +1,17 @@
-import { createAgent, openai, type TextMessage } from "@inngest/agent-kit";
-import { eq, inArray } from "drizzle-orm";
-import JSONL from "jsonl-parse-stringify";
-import { Config } from "@/config/env";
+import { env } from "@/config/env";
 import { db } from "@/db";
 import { agents, user, userInterviews } from "@/db/schema";
 import type { StreamTranscriptItem } from "@/types";
+import { createAgent, openai, type TextMessage } from "@inngest/agent-kit";
+import { eq, inArray } from "drizzle-orm";
+import JSONL from "jsonl-parse-stringify";
 import { inngest } from "./client";
 
 const summarizer = createAgent({
 	name: "InterviewTranscriptSummarizer",
 	system:
 		"You are a professional interview transcript summarizer. Your task is to create concise, informative summaries that capture the key points, insights, and outcomes of the interview.",
-	model: openai({ model: "gpt-4o-mini", apiKey: Config.OPENAI_API_KEY }),
+	model: openai({ model: "gpt-4o-mini", apiKey: env.OPENAI_API_KEY }),
 });
 
 export const interviewProcessing = inngest.createFunction(

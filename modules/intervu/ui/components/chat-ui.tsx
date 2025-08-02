@@ -2,7 +2,7 @@
 
 import { generateChatToken } from "@/actions/user-interview";
 import { LoadingState } from "@/components/general/loading-state";
-import { Config } from "@/config/env";
+import { env } from "@/config/env";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import type { Channel as StreamChannel } from "stream-chat";
@@ -41,7 +41,7 @@ export const ChatUI = ({
 	const [channel, setChannel] = useState<StreamChannel>();
 
 	const client = useCreateChatClient({
-		apiKey: Config.NEXT_PUBLIC_STREAM_CHAT_API_KEY,
+		apiKey: env.NEXT_PUBLIC_STREAM_CHAT_API_KEY,
 		tokenOrProvider: ChatToken,
 		userData: {
 			id: userId,

@@ -1,3 +1,10 @@
+import { env } from "@/config/env";
+import { db } from "@/db";
+import { agents, userInterviews } from "@/db/schema";
+import { inngest } from "@/inngest/client";
+import { generateAvatarUri } from "@/lib/avatar";
+import { streamChat } from "@/lib/stream-chat";
+import { streamVideo } from "@/lib/stream-video";
 import type { RealtimeClient } from "@openai/realtime-api-beta";
 import type {
 	CallRecordingReadyEvent,
@@ -13,16 +20,9 @@ import { and, eq } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources/index.mjs";
-import { Config } from "@/config/env";
-import { db } from "@/db";
-import { agents, userInterviews } from "@/db/schema";
-import { inngest } from "@/inngest/client";
-import { generateAvatarUri } from "@/lib/avatar";
-import { streamChat } from "@/lib/stream-chat";
-import { streamVideo } from "@/lib/stream-video";
 
 const openaiClient = new OpenAI({
-	apiKey: Config.OPENAI_API_KEY,
+	apiKey: env.OPENAI_API_KEY,
 });
 
 function verifySignatureWithSDK(body: string, signature: string): boolean {
@@ -84,7 +84,7 @@ async function handleSessionStarted(event: CallSessionStartedEvent) {
 		const realtimeClient: RealtimeClient =
 			await streamVideo.video.connectOpenAi({
 				call,
-				openAiApiKey: Config.OPENAI_API_KEY,
+				openAiApiKey: env.OPENAI_API_KEY,
 				agentUserId: existingAgent.id,
 			});
 

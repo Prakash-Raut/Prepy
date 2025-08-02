@@ -1,5 +1,7 @@
 "use client";
 
+import { env } from "@/config/env";
+import { generateAvatarUri } from "@/lib/avatar";
 import {
 	type Call,
 	CallingState,
@@ -9,8 +11,6 @@ import {
 } from "@stream-io/video-react-sdk";
 import { LoaderIcon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Config } from "@/config/env";
-import { generateAvatarUri } from "@/lib/avatar";
 import { InterviewUI } from "./interview-ui";
 
 interface Props {
@@ -46,7 +46,7 @@ export const InterviewConnect = ({
 			if (!token) return;
 
 			const client = StreamVideoClient.getOrCreateInstance({
-				apiKey: Config.NEXT_PUBLIC_STREAM_VIDEO_API_KEY,
+				apiKey: env.NEXT_PUBLIC_STREAM_VIDEO_API_KEY,
 				user: {
 					id: userId,
 					name: userName,

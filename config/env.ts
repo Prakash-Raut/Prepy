@@ -1,19 +1,27 @@
-import "dotenv/config";
+import { createEnv } from "@t3-oss/env-core";
+import { z } from "zod";
 
-export const Config = {
-	DATABASE_URL: process.env.DATABASE_URL || "",
-	BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET || "",
-	GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || "",
-	GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET || "",
-	GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID || "",
-	GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET || "",
-	NEXT_PUBLIC_STREAM_VIDEO_API_KEY:
-		process.env.NEXT_PUBLIC_STREAM_VIDEO_API_KEY || "",
-	STREAM_VIDEO_API_SECRET: process.env.STREAM_VIDEO_API_SECRET || "",
-	NEXT_PUBLIC_STREAM_CHAT_API_KEY:
-		process.env.NEXT_PUBLIC_STREAM_CHAT_API_KEY || "",
-	STREAM_CHAT_API_SECRET: process.env.STREAM_CHAT_API_SECRET || "",
-	OPENAI_API_KEY: process.env.OPENAI_API_KEY || "",
-	NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY || "",
-	NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST || "",
-};
+export const env = createEnv({
+	server: {
+		DATABASE_URL: z.string().url(),
+		BETTER_AUTH_SECRET: z.string(),
+		GOOGLE_CLIENT_ID: z.string(),
+		GOOGLE_CLIENT_SECRET: z.string(),
+		GITHUB_CLIENT_ID: z.string(),
+		GITHUB_CLIENT_SECRET: z.string(),
+		STREAM_VIDEO_API_SECRET: z.string(),
+		STREAM_CHAT_API_SECRET: z.string(),
+		OPENAI_API_KEY: z.string(),
+	},
+	client: {
+		NEXT_PUBLIC_STREAM_VIDEO_API_KEY: z.string(),
+		NEXT_PUBLIC_STREAM_CHAT_API_KEY: z.string(),
+		NEXT_PUBLIC_POSTHOG_KEY: z.string(),
+		NEXT_PUBLIC_POSTHOG_HOST: z.string().url(),
+	},
+	clientPrefix: "NEXT_PUBLIC_",
+	// Loads from process.env
+	runtimeEnv: process.env,
+	// Skip validation in development to allow partial .env files
+	skipValidation: process.env.NODE_ENV !== "production",
+});
