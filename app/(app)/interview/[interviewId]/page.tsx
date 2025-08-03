@@ -6,7 +6,7 @@ import {
 	InterviewIdView,
 	InterviewIdViewError,
 	InterviewIdViewLoader,
-} from "@/modules/intervu/ui/views/interview-id-view";
+} from "@/modules/interview/ui/views/interview-id-view";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
